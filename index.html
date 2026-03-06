@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSC · Simulation Source Code · Numerology</title>
+  <meta name="description" content="Discover your seven numerology frequencies.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <!-- ════ NAVIGATION ════ -->
+  <div id="include-nav"></div>
+
+  <!-- ════ PAGES ════ -->
+  <div id="include-home"></div>
+  <div id="include-calculator"></div>
+  <div id="include-books"></div>
+  <div id="include-blog"></div>
+  <div id="include-about"></div>
+  <div id="include-privacy"></div>
+
+  <!-- ════ FOOTER ════ -->
+  <div id="include-footer"></div>
+
+  <!-- ════ ADMIN OVERLAY ════ -->
+  <div id="include-admin"></div>
+
+  <!-- Toast notification (used by admin) -->
+  <div id="admin-toast"></div>
+
+  <!-- ════ SCRIPTS ════ -->
+  <!-- Load order: app → simulation → admin → then loader injects HTML and boots everything -->
+  <script src="js/app.js"></script>
+  <script src="js/simulation.js"></script>
+  <script src="js/admin.js"></script>
+
+  <!-- ════ PAGE LOADER ════
+       Fetches each HTML fragment and injects it.
+       Only AFTER all fragments are in the DOM does it boot
+       the simulation (so canvases exist) and the admin CMS.
+  ════ -->
+  <script>
+    (function () {
+      var PAGES = [
+        { id: 'include-nav',        src: 'pages/nav.html'        },
+        { id: 'include-home',       src: 'pages/home.html'       },
+        { id: 'include-calculator', src: 'pages/calculator.html' },
+        { id: 'include-books',      src: 'pages/books.html'      },
+        { id: 'include-blog',       src: 'pages/blog.html'       },
+        { id: 'include-about',      src: 'pages/about.html'      },
+        { id: 'include-privacy',    src: 'pages/privacy.html'    },
+        { id: 'include-footer',     src: 'pages/footer.html'     },
+        { id: 'include-admin',      src: 'pages/admin.html'      },
+      ];
+
+      var loaded = 0;
+
+      function onAllLoaded() {
+        // 1. Route to correct page
+        if (typeof initApp === 'function') initApp();
+
+        // 2. Boot canvas animations — MUST run after home.html is in the DOM
+        //    so canvas-solid / canvas-holo / canvas-matrix elements exist
+        if (typeof bootSimulation === 'function') {
+          bootSimulation();
+        }
+
+        // 3. Boot admin CMS
+        if (typeof adminSystem !== 'undefined' && typeof adminSystem.boot === 'function') {
+          adminSystem.boot();
+        }
+      }
+
+      PAGES.forEach(function (page) {
+        fetch(page.src)
+          .then(function (r) {
+            if (!r.ok) throw new Error('Failed to load ' + page.src);
+            return r.text();
+          })
+          .then(function (html) {
+            var el = document.getElementById(page.id);
+            if (el) el.innerHTML = html;
+            loaded++;
+            if (loaded === PAGES.length) onAllLoaded();
+          })
+          .catch(function (err) {
+            console.warn('SSC loader:', err.message);
+            loaded++;
+            if (loaded === PAGES.length) onAllLoaded();
+          });
+      });
+    })();
+  </script>
+
+</body>
+</html>
