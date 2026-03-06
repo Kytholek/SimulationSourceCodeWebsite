@@ -490,10 +490,3 @@ var adminSystem = (function () {
   }
 
 })(); // end adminSystem IIFE
-
-// ── Init admin after DOM ready ──────────────────────────────────
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', function(){ adminSystem.boot(); });
-} else {
-  adminSystem.boot();
-}
