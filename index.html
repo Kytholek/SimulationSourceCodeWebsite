@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SSC · Simulation Source Code · Numerology</title>
-<meta name="description" content="Discover your seven numerology frequencies — the complete architecture of your simulation.">
+<title>SSC &middot; Simulation Source Code &middot; Numerology</title>
+<meta name="description" content="Discover your seven numerology frequencies.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
+
 /* ═══════════════════════════════════════
    ROOT VARIABLES & RESET
 ═══════════════════════════════════════ */
@@ -764,15 +765,160 @@ footer {
   .hero-actions { flex-direction: column; align-items: stretch; }
   .btn-primary, .btn-secondary { text-align: center; }
 }
+
+
+/* ══════════════════════════════════════════════════════════
+   SIMULATION DESCENT LAYERS
+══════════════════════════════════════════════════════════ */
+
+.sim-layer {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Canvas — hidden until scrolled into view */
+.layer-canvas {
+  position: absolute;
+  inset: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity;
+}
+
+.sim-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 110px 24px;
+  text-align: center;
+}
+
+/* ── Seamless top/bottom bleed into --void on every layer ── */
+.sim-layer::before,
+.sim-layer::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 220px;
+  z-index: 4;
+  pointer-events: none;
+}
+.sim-layer::before {
+  top: 0;
+  background: linear-gradient(to bottom, #05040a 0%, transparent 100%);
+}
+.sim-layer::after {
+  bottom: 0;
+  background: linear-gradient(to top, #05040a 0%, transparent 100%);
+}
+
+/* Layer badge */
+.layer-label {
+  position: absolute;
+  top: 32px; right: 32px;
+  z-index: 10;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 3px;
+  opacity: 0; transform: translateY(-6px);
+  transition: opacity 1.2s ease 0.4s, transform 1.2s ease 0.4s;
+}
+.layer-label.visible { opacity: 1; transform: translateY(0); }
+.layer-depth {
+  font-family: 'Cinzel', serif; font-size: 7px;
+  letter-spacing: .45em; color: rgba(201,168,76,.28); text-transform: uppercase;
+}
+.layer-name {
+  font-family: 'Cinzel', serif; font-size: 9px;
+  letter-spacing: .28em; color: rgba(201,168,76,.52); text-transform: uppercase;
+}
+
+/* ════ LAYER 2 — Physical Substrate (warm amber-stone) ════ */
+.sim-layer-2 { background: #05040a; }
+.sim-layer-2::after { background: linear-gradient(to top, #05040a 0%, transparent 100%); }
+.sim-layer-2 .sim-eyebrow { color: rgba(195,162,88,.7); letter-spacing: .4em; }
+.sim-layer-2 .section-title { color: #c4b47e; }
+.sim-layer-2 .section-body  { color: rgba(148,130,90,.78); }
+
+/* ════ LAYER 3 — Holographic Field (deep teal) ════ */
+.sim-layer-3 { background: #01040c; }
+.sim-layer-3::before { background: linear-gradient(to bottom, #05040a 0%, transparent 100%); }
+.sim-layer-3::after  { background: linear-gradient(to top,   #01040c 0%, transparent 100%); }
+.sim-layer-3 .sim-eyebrow { color: rgba(45,200,215,.88); letter-spacing: .4em; }
+.sim-layer-3 .section-title {
+  color: #cef2f4;
+  text-shadow: 0 0 60px rgba(0,185,210,.25), 0 0 120px rgba(0,145,190,.1);
+}
+.sim-layer-3 .section-body { color: rgba(80,200,210,.82); }
+
+.holo-card {
+  background: rgba(0,120,145,.07) !important;
+  border-color: rgba(0,195,215,.15) !important;
+  transition: border-color .5s ease, box-shadow .5s ease !important;
+}
+.holo-card:hover {
+  border-color: rgba(0,195,215,.4) !important;
+  box-shadow: 0 0 36px rgba(0,190,215,.1), inset 0 0 20px rgba(0,190,215,.04) !important;
+}
+.holo-card .freq-number { color: rgba(0,210,220,.85); }
+.holo-card .freq-name   { color: #96e2e4; }
+.holo-card .freq-desc   { color: rgba(120,215,218,.65); }
+
+/* ════ LAYER 4 — Source Code (matrix green) ════ */
+.sim-layer-4 { background: #000; }
+.sim-layer-4::before { background: linear-gradient(to bottom, #01040c 0%, transparent 100%); }
+.sim-layer-4::after  { background: linear-gradient(to top,   #000    0%, transparent 100%); }
+.sim-layer-4 .sim-eyebrow {
+  color: rgba(0,240,65,.65); letter-spacing: .5em;
+  text-shadow: 0 0 16px rgba(0,240,65,.3);
+}
+.sim-layer-4 .section-title {
+  color: #00ee40;
+  text-shadow: 0 0 30px rgba(0,235,65,.4), 0 0 90px rgba(0,235,65,.15);
+}
+.sim-layer-4 .section-body { color: rgba(0,195,52,.76); }
+
+/* Terminal step blocks */
+.steps-code { max-width: 620px; margin: 48px auto 0; text-align: left; }
+.step-code {
+  background: rgba(0,22,7,.75); padding: 22px 24px; border-radius: 3px;
+  border: 1px solid rgba(0,195,55,.2); margin-bottom: 14px;
+  display: flex; gap: 20px; align-items: flex-start;
+  backdrop-filter: blur(6px);
+}
+.step-code .step-title {
+  color: #00ee40; font-family: 'Cinzel', serif;
+  font-size: 10px; letter-spacing: .22em; text-transform: uppercase; margin-bottom: 6px;
+}
+.step-code .step-body { color: rgba(0,195,52,.8); font-size: 16px; line-height: 1.65; }
+.code-num {
+  flex-shrink: 0; min-width: 40px; height: 40px; margin-top: 2px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,22,7,.9) !important; border-radius: 3px !important;
+  border: 1px solid rgba(0,195,55,.32) !important;
+  color: #00ee40 !important; font-family: 'Courier New', monospace !important;
+  font-size: 13px; box-shadow: 0 0 12px rgba(0,235,65,.15), inset 0 0 6px rgba(0,235,65,.06);
+}
+.code-quote {
+  border-color: rgba(0,195,55,.25) !important;
+  background: rgba(0,16,5,.7) !important;
+  max-width: 620px; margin: 44px auto !important;
+  backdrop-filter: blur(6px);
+}
+.code-quote .quote-text { color: rgba(0,220,62,.86) !important; }
+.code-quote .quote-attr { color: rgba(0,150,40,.68) !important; }
+
 </style>
 </head>
 <body>
-
-<!-- ═══════════════════════════════════════
-     NAVIGATION
-═══════════════════════════════════════ -->
+<!-- ════ NAVIGATION ════ -->
 <nav>
-  <div class="nav-logo" onclick="showPage('home')" style="cursor:pointer">
+  <div class="nav-logo" onclick="showPage('home')">
     <div class="nav-logo-sigil">
       <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="32" cy="32" r="30" stroke="#c9a84c" stroke-width="0.5" stroke-dasharray="4 3"/>
@@ -783,437 +929,204 @@ footer {
         <circle cx="32" cy="32" r="2" fill="#e8c96b"/>
       </svg>
     </div>
-    <div class="nav-logo-text">✦ &nbsp;Simulation Source Code</div>
+    <div class="nav-logo-text">&#10022; &nbsp;Simulation Source Code</div>
   </div>
-
   <div class="nav-links">
-    <button class="nav-link active" id="nav-home" onclick="showPage('home')">Home</button>
-    <button class="nav-link" id="nav-calculator" onclick="showPage('calculator')">Calculator</button>
-    <button class="nav-link" id="nav-books" onclick="showPage('books')">Books</button>
-    <button class="nav-link" id="nav-blog" onclick="showPage('blog')">Blog</button>
-    <button class="nav-link" id="nav-about" onclick="showPage('about')">About</button>
-    <button class="nav-link" id="nav-privacy" onclick="showPage('privacy')">Privacy</button>
+    <button class="nav-link active" id="nav-home"       onclick="showPage('home')">Home</button>
+    <button class="nav-link"        id="nav-calculator" onclick="showPage('calculator')">Calculator</button>
+    <button class="nav-link"        id="nav-books"      onclick="showPage('books')">Books</button>
+    <button class="nav-link"        id="nav-blog"       onclick="showPage('blog')">Blog</button>
+    <button class="nav-link"        id="nav-about"      onclick="showPage('about')">About</button>
+    <button class="nav-link"        id="nav-privacy"    onclick="showPage('privacy')">Privacy</button>
   </div>
-
-  <a href="#" class="nav-cta" onclick="alert('App store link coming soon!'); return false;">⬡ &nbsp;Download App</a>
-
+  <a href="#" class="nav-cta" onclick="alert('Coming soon!');return false;">&#11041;&nbsp;Download App</a>
   <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
 </nav>
-
-<!-- Mobile Menu -->
 <div class="nav-mobile" id="mobile-menu">
-  <button class="nav-link" onclick="showPage('home'); toggleMenu()">Home</button>
-  <button class="nav-link" onclick="showPage('calculator'); toggleMenu()">Calculator</button>
-  <button class="nav-link" onclick="showPage('books'); toggleMenu()">Books</button>
-  <button class="nav-link" onclick="showPage('blog'); toggleMenu()">Blog</button>
-  <button class="nav-link" onclick="showPage('about'); toggleMenu()">About</button>
-  <button class="nav-link" onclick="showPage('privacy'); toggleMenu()">Privacy</button>
-  <a href="#" class="nav-cta" onclick="alert('App store link coming soon!'); return false;">⬡ &nbsp;Download App</a>
+  <button class="nav-link" onclick="showPage('home');toggleMenu()">Home</button>
+  <button class="nav-link" onclick="showPage('calculator');toggleMenu()">Calculator</button>
+  <button class="nav-link" onclick="showPage('books');toggleMenu()">Books</button>
+  <button class="nav-link" onclick="showPage('blog');toggleMenu()">Blog</button>
+  <button class="nav-link" onclick="showPage('about');toggleMenu()">About</button>
+  <button class="nav-link" onclick="showPage('privacy');toggleMenu()">Privacy</button>
+  <a href="#" class="nav-cta" onclick="alert('Coming soon!');return false;">&#11041;&nbsp;Download App</a>
 </div>
 
-
-<!-- ═══════════════════════════════════════
-     HOME PAGE
-═══════════════════════════════════════ -->
+<!-- ════ HOME PAGE ════ -->
 <div class="page active" id="page-home">
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-sigil a0">
-      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="32" cy="32" r="30" stroke="#c9a84c" stroke-width="0.5" stroke-dasharray="4 3"/>
-        <circle cx="32" cy="32" r="20" stroke="#c9a84c" stroke-width="0.5"/>
-        <polygon points="32,4 60,50 4,50" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.6"/>
-        <polygon points="32,60 4,14 60,14" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.6"/>
-        <circle cx="32" cy="32" r="4" fill="#c9a84c" opacity="0.8"/>
-        <circle cx="32" cy="32" r="2" fill="#e8c96b"/>
-      </svg>
-    </div>
-    <div class="hero-eyebrow a1">Simulation Source Code</div>
-    <h1 class="hero-title a1">Numerology</h1>
-    <div class="hero-subtitle a2">Decode the Architecture of Your Life</div>
-    <p class="hero-body a2">Seven frequencies encoded in your birth and name — the complete blueprint of your simulation, waiting to be read.</p>
-    <div class="hero-actions a3">
-      <button class="btn-primary" onclick="showPage('calculator')">⬡ &nbsp;Begin Your Reading</button>
-      <button class="btn-secondary" onclick="showPage('about')">Learn More</button>
-    </div>
-    <div class="scroll-indicator">Explore</div>
-  </section>
+<!-- LAYER 1 — Surface Reality (hero, unchanged) -->
+<section class="hero sim-layer-1" id="sim-layer-1">
+  <div class="hero-sigil a0">
+    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="32" cy="32" r="30" stroke="#c9a84c" stroke-width="0.5" stroke-dasharray="4 3"/>
+      <circle cx="32" cy="32" r="20" stroke="#c9a84c" stroke-width="0.5"/>
+      <polygon points="32,4 60,50 4,50" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.6"/>
+      <polygon points="32,60 4,14 60,14" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.6"/>
+      <circle cx="32" cy="32" r="4" fill="#c9a84c" opacity="0.8"/>
+      <circle cx="32" cy="32" r="2" fill="#e8c96b"/>
+    </svg>
+  </div>
+  <div class="hero-eyebrow a1">|</div>
+  <h1 class="hero-title a1">Simulation Source Code</h1>
+  <div class="hero-subtitle a2">Decode the Architecture of Your Life</div>
+  <p class="hero-body a2">Seven frequencies encoded in your birth and name — the complete blueprint of your simulation, waiting to be read.</p>
+  <div class="hero-actions a3">
+    <button class="btn-primary" onclick="showPage('calculator')">&#11041;&nbsp;Begin Your Reading</button>
+    <button class="btn-secondary" onclick="showPage('about')">Learn More</button>
+  </div>
+  <div class="scroll-indicator">Descend</div>
+</section>
 
-  <div class="divider"><div class="divider-gem"></div></div>
-
-  <!-- What is SSC Numerology -->
-  <div class="section section-centered a1">
-    <div class="section-eyebrow">What Is This</div>
+<!-- LAYER 2 — Physical Substrate -->
+<section class="sim-layer sim-layer-2">
+  <canvas class="layer-canvas" id="canvas-solid"></canvas>
+  <div class="layer-label">
+    <span class="layer-depth">LAYER 02</span>
+    <span class="layer-name">Physical Substrate</span>
+  </div>
+  <div class="sim-content">
+    <div class="section-eyebrow sim-eyebrow">A New system</div>
     <h2 class="section-title">Numerology as Source Code</h2>
-    <p class="section-body">The universe runs on mathematics. Your name and birth date are not coincidences — they are encoded data, parameters set at the moment your simulation began. Numerology is the practice of reading that code.</p>
+    <p class="section-body">&nbsp;Your name and birth date are not coincidences — they are encoded data, parameters set at the moment your simulation began. Numerology is the practice of reading that code.</p>
     <p class="section-body" style="margin-top:16px">Simulation Source Code goes deeper than traditional numerology, revealing seven distinct frequencies that together form the complete architecture of your experience — your drives, your gifts, your lessons, your destiny.</p>
   </div>
+</section>
 
-  <div class="divider"><div class="divider-gem"></div></div>
-
-  <!-- The Seven Frequencies -->
-  <div class="section-wide">
-    <div style="text-align:center; margin-bottom:8px">
-      <div class="section-eyebrow">The Seven Frequencies</div>
-      <h2 class="section-title">Your Complete Reading</h2>
-    </div>
+<!-- LAYER 3 — Holographic Field -->
+<section class="sim-layer sim-layer-3">
+  <canvas class="layer-canvas" id="canvas-holo"></canvas>
+  <div class="layer-label">
+    <span class="layer-depth">LAYER 03</span>
+    <span class="layer-name">Holographic Field</span>
+  </div>
+  <div class="sim-content">
+    <div class="section-eyebrow sim-eyebrow">The Seven Frequencies</div>
+    <h2 class="section-title">Your Complete Reading</h2>
     <div class="freq-grid">
-      <div class="freq-card">
-        <div class="freq-number">01</div>
-        <div class="freq-name">Life Path</div>
-        <p class="freq-desc">The primary frequency of your journey — the core theme and direction your life is oriented toward.</p>
-      </div>
-      <div class="freq-card">
-        <div class="freq-number">02</div>
-        <div class="freq-name">Expression</div>
-        <p class="freq-desc">How your energies naturally express in the world — your innate talents and the way others experience you.</p>
-      </div>
-      <div class="freq-card">
-        <div class="freq-number">03</div>
-        <div class="freq-name">Life Calling</div>
-        <p class="freq-desc">Your unique mission — the specific way you're meant to serve and contribute. Combines your Life Path and Expression into a single directive frequency.</p>
-      </div>
-      <div class="freq-card">
-        <div class="freq-number">04</div>
-        <div class="freq-name">Soul</div>
-        <p class="freq-desc">Your inner world — the private desires, values, and yearnings that motivate everything you do.</p>
-      </div>
-      <div class="freq-card">
-        <div class="freq-number">05</div>
-        <div class="freq-name">Outer</div>
-        <p class="freq-desc">The face you show the world — your personality, how you are perceived, and your social signature.</p>
-      </div>
-      <div class="freq-card">
-        <div class="freq-number">06</div>
-        <div class="freq-name">Achievement</div>
-        <p class="freq-desc">Your approach to goals and accomplishment — how you naturally achieve things and what drives your success. Derived from your birth month and day.</p>
-      </div>
-      <div class="freq-card">
-        <div class="freq-number">07</div>
-        <div class="freq-name">Theme</div>
-        <p class="freq-desc">The recurring pattern woven through your life — the lesson that keeps returning until it is integrated.</p>
-      </div>
+      <div class="freq-card holo-card"><div class="freq-number">01</div><div class="freq-name">Life Path</div><p class="freq-desc">The primary frequency of your journey — the core theme and direction your life is oriented toward.</p></div>
+      <div class="freq-card holo-card"><div class="freq-number">02</div><div class="freq-name">Expression</div><p class="freq-desc">How your energies naturally express in the world — your innate talents and the way others experience you.</p></div>
+      <div class="freq-card holo-card"><div class="freq-number">03</div><div class="freq-name">Life Calling</div><p class="freq-desc">Your unique mission — combining your Life Path and Expression into a single directive frequency.</p></div>
+      <div class="freq-card holo-card"><div class="freq-number">04</div><div class="freq-name">Soul</div><p class="freq-desc">Your inner world — the private desires, values, and yearnings that motivate everything you do.</p></div>
+      <div class="freq-card holo-card"><div class="freq-number">05</div><div class="freq-name">Outer</div><p class="freq-desc">The face you show the world — your personality, how you are perceived, and your social signature.</p></div>
+      <div class="freq-card holo-card"><div class="freq-number">06</div><div class="freq-name">Achievement</div><p class="freq-desc">Your approach to goals — how you naturally achieve things. Derived from your birth month and day.</p></div>
+      <div class="freq-card holo-card"><div class="freq-number">07</div><div class="freq-name">Theme</div><p class="freq-desc">The recurring pattern woven through your life — the lesson that keeps returning until integrated.</p></div>
     </div>
   </div>
+</section>
 
-  <div class="divider"><div class="divider-gem"></div></div>
-
-  <!-- How It Works -->
-  <div class="section">
-    <div class="section-eyebrow">How It Works</div>
+<!-- LAYER 4 — Source Code -->
+<section class="sim-layer sim-layer-4">
+  <canvas class="layer-canvas" id="canvas-matrix"></canvas>
+  <div class="layer-label">
+    <span class="layer-depth">LAYER 04</span>
+    <span class="layer-name">Source Code</span>
+  </div>
+  <div class="sim-content">
+    <div class="section-eyebrow sim-eyebrow">How It Works</div>
     <h2 class="section-title">Three Steps to Your Reading</h2>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">I</div>
-        <div>
-          <div class="step-title">Enter Your Details</div>
-          <p class="step-body">Provide your full birth name and date of birth. This is the raw data from which all seven frequencies are calculated. Accuracy matters — use the name on your birth certificate.</p>
-        </div>
+    <div class="steps steps-code">
+      <div class="step-code">
+        <div class="code-num">I</div>
+        <div><div class="step-title">Enter Your Details</div><p class="step-body">Provide your full birth name and date of birth. Use the name on your birth certificate.</p></div>
       </div>
-      <div class="step">
-        <div class="step-num">II</div>
-        <div>
-          <div class="step-title">Calculate Your Frequencies</div>
-          <p class="step-body">Our system applies Pythagorean numerology principles to derive each of your seven core numbers, revealing the mathematical signature of your unique simulation parameters.</p>
-        </div>
+      <div class="step-code">
+        <div class="code-num">II</div>
+        <div><div class="step-title">Calculate Your Frequencies</div><p class="step-body">Our system applies Pythagorean numerology principles to derive each of your seven core numbers.</p></div>
       </div>
-      <div class="step">
-        <div class="step-num">III</div>
-        <div>
-          <div class="step-title">Receive Your Interpretation</div>
-          <p class="step-body">Each number is decoded with rich, layered interpretations — exploring themes, archetypes, strengths, shadows, and the deeper purpose encoded in each frequency.</p>
-        </div>
+      <div class="step-code">
+        <div class="code-num">III</div>
+        <div><div class="step-title">Receive Your Interpretation</div><p class="step-body">Each number is decoded with rich layered interpretations — themes, archetypes, strengths, and shadows.</p></div>
       </div>
     </div>
-  </div>
-
-  <!-- Quote block -->
-  <div style="padding: 0 24px; position:relative; z-index:1">
-    <div class="quote-block">
+    <div class="quote-block code-quote">
       <p class="quote-text">"Numbers are the language in which the universe was written."</p>
-      <div class="quote-attr">— Galileo Galilei</div>
+      <div class="quote-attr">&#8212; Galileo Galilei</div>
     </div>
-  </div>
-
-  <!-- CTA Section -->
-  <div class="panel-section" style="position:relative; z-index:1">
-    <div style="max-width:640px; margin:0 auto; text-align:center; padding:0 24px">
-      <div class="section-eyebrow">Begin Now</div>
-      <h2 class="section-title">Discover Your Frequencies</h2>
-      <p class="section-body" style="margin-bottom:36px">Your numerology chart is a map — not of what must happen, but of what is possible. Begin your reading today and see the code beneath the story of your life.</p>
-      <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap">
-        <button class="btn-primary" onclick="showPage('calculator')">⬡ &nbsp;Open the Calculator</button>
-        <a href="#" class="btn-secondary" onclick="alert('App store link coming soon!'); return false;">Download the App</a>
+    <div style="margin-top:48px">
+      <div class="section-eyebrow sim-eyebrow" style="margin-bottom:16px">Begin Now</div>
+      <h2 class="section-title" style="margin-bottom:16px">Discover Your Frequencies</h2>
+      <p class="section-body" style="margin-bottom:36px">Your numerology chart is a map &#8212; not of what must happen, but of what is possible.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+        <button class="btn-primary" onclick="showPage('calculator')">&#11041;&nbsp;Open the Calculator</button>
+        <a href="#" class="btn-secondary" onclick="alert('Coming soon!');return false;">Download the App</a>
+      </div>
+      <div style="margin-top:48px;display:flex;justify-content:center;gap:14px">
+        <a href="https://www.instagram.com/simulationsourcecode" target="_blank" class="social-btn">&#128247;</a>
+        <a href="https://www.youtube.com/@kytholek" target="_blank" class="social-btn">&#9654;&#65039;</a>
+        <a href="https://www.kytholek.com" target="_blank" class="social-btn">&#127760;</a>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- Footer Social -->
-  <div style="padding:48px 24px 40px; text-align:center; position:relative; z-index:1">
-    <div class="section-eyebrow" style="margin-bottom:20px">Continue Learning</div>
-    <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap">
-      <a href="https://www.instagram.com/simulationsourcecode" target="_blank" class="social-btn" title="Instagram">📷</a>
-      <a href="https://www.youtube.com/@kytholek" target="_blank" class="social-btn" title="YouTube">▶️</a>
-      <a href="https://www.kytholek.com" target="_blank" class="social-btn" title="Website">🌐</a>
-    </div>
-  </div>
+</div><!-- /page-home -->
 
-</div>
-
-
-<!-- ═══════════════════════════════════════
-     CALCULATOR PAGE
-═══════════════════════════════════════ -->
+<!-- ════ CALCULATOR PAGE ════ -->
 <div class="page" id="page-calculator">
-
   <div class="calc-page-hero a0">
     <div class="calc-page-eyebrow">Simulation Source Code</div>
     <h1 class="calc-page-title">Numerology Calculator</h1>
     <p class="calc-page-sub">Enter your birth details to reveal your seven encoded frequencies.</p>
   </div>
-
   <div class="calc-container">
     <div class="form-card a1">
-      <div class="form-section-label">· Birth Date ·</div>
+      <div class="form-section-label">&#xB7; Birth Date &#xB7;</div>
       <div class="date-row">
-        <div class="field">
-          <label>Month</label>
+        <div class="field"><label>Month</label>
           <select id="calc-month">
-            <option value="">—</option>
-            <option value="1">January</option>
-            <option value="2">February</option>
-            <option value="3">March</option>
-            <option value="4">April</option>
-            <option value="5">May</option>
-            <option value="6">June</option>
-            <option value="7">July</option>
-            <option value="8">August</option>
-            <option value="9">September</option>
-            <option value="10">October</option>
-            <option value="11">November</option>
-            <option value="12">December</option>
+            <option value="">&#8212;</option>
+            <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+            <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+            <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+            <option value="10">October</option><option value="11">November</option><option value="12">December</option>
           </select>
         </div>
-        <div class="field">
-          <label>Day</label>
-          <input type="number" id="calc-day" placeholder="DD" min="1" max="31">
-        </div>
-        <div class="field">
-          <label>Year</label>
-          <input type="number" id="calc-year" placeholder="YYYY" min="1900" max="2099">
-        </div>
+        <div class="field"><label>Day</label><input type="number" id="calc-day" placeholder="DD" min="1" max="31"></div>
+        <div class="field"><label>Year</label><input type="number" id="calc-year" placeholder="YYYY" min="1900" max="2099"></div>
       </div>
-      <div class="name-field">
-        <div class="form-section-label" style="margin-top:28px">· Full Birth Name ·</div>
-        <div class="field">
-          <label>First Name</label>
-          <input type="text" id="calc-first" placeholder="As on birth certificate">
-        </div>
-        <div class="field" style="margin-top:14px">
-          <label>Middle Name (if any)</label>
-          <input type="text" id="calc-middle" placeholder="Optional">
-        </div>
-        <div class="field" style="margin-top:14px">
-          <label>Last Name</label>
-          <input type="text" id="calc-last" placeholder="Surname">
-        </div>
-      </div>
+      <div class="form-section-label" style="margin-top:28px">&#xB7; Full Birth Name &#xB7;</div>
+      <div class="field"><label>First Name</label><input type="text" id="calc-first" placeholder="As on birth certificate"></div>
+      <div class="field" style="margin-top:14px"><label>Middle Name (if any)</label><input type="text" id="calc-middle" placeholder="Optional"></div>
+      <div class="field" style="margin-top:14px"><label>Last Name</label><input type="text" id="calc-last" placeholder="Surname"></div>
     </div>
-
-    <button class="calc-btn a2" onclick="calculateReading()">⬡ &nbsp;Calculate My Reading &nbsp;⬡</button>
-
+    <button class="calc-btn a2" onclick="calculateReading()">&#11041;&nbsp;Calculate My Reading&nbsp;&#11041;</button>
     <div class="results-placeholder a3" id="results-area">
-      <div class="results-placeholder-icon">✦</div>
+      <div class="results-placeholder-icon">&#10022;</div>
       <div class="results-placeholder-text">Your reading will appear here</div>
     </div>
   </div>
+</div><!-- /page-calculator -->
 
-</div>
-
-
-<!-- ═══════════════════════════════════════
-     BOOKS PAGE
-═══════════════════════════════════════ -->
+<!-- ════ BOOKS PAGE ════ -->
 <div class="page" id="page-books">
-
   <div class="books-hero a0">
     <div class="section-eyebrow">Knowledge &amp; Study</div>
     <h1 class="section-title">Recommended Books</h1>
-    <p class="section-body" style="max-width:520px; margin:0 auto; font-style:italic; color:var(--text-dim)">
-      A curated library to deepen your understanding of numerology, sacred mathematics, and the language of the universe.
-    </p>
+    <p class="section-body" style="max-width:520px;margin:0 auto;font-style:italic;color:var(--text-dim)">A curated library to deepen your understanding of numerology, sacred mathematics, and the language of the universe.</p>
   </div>
-
   <div class="books-container">
-
-    <div class="books-section-title a1">· Numerology Essentials ·</div>
+    <div class="books-section-title a1">&#xB7; Numerology Essentials &#xB7;</div>
     <div class="book-grid a1">
-      <div class="book-card">
-        <div class="book-cover"><div class="book-cover-sigil">📖</div></div>
-        <div class="book-info">
-          <div class="book-tag">Foundational</div>
-          <div class="book-title">Numerology and the Divine Triangle</div>
-          <div class="book-author">Faith Javane &amp; Dusty Bunker</div>
-          <p class="book-desc">A comprehensive introduction to the Pythagorean system, connecting numerology with Tarot and astrology into a unified framework.</p>
-          <a href="#" class="book-btn">View Book →</a>
-        </div>
-      </div>
-      <div class="book-card">
-        <div class="book-cover"><div class="book-cover-sigil">🔢</div></div>
-        <div class="book-info">
-          <div class="book-tag">Classical</div>
-          <div class="book-title">The Complete Book of Numerology</div>
-          <div class="book-author">David A. Phillips</div>
-          <p class="book-desc">An in-depth exploration of how numbers shape personality and destiny, written by one of numerology's most respected modern voices.</p>
-          <a href="#" class="book-btn">View Book →</a>
-        </div>
-      </div>
-      <div class="book-card">
-        <div class="book-cover"><div class="book-cover-sigil">✨</div></div>
-        <div class="book-info">
-          <div class="book-tag">Practical</div>
-          <div class="book-title">Numerology: Key To Your Inner Self</div>
-          <div class="book-author">Hans Decoz</div>
-          <p class="book-desc">A detailed, practical guide to calculating and interpreting all core numbers, with emphasis on personal and professional application.</p>
-          <a href="#" class="book-btn">View Book →</a>
-        </div>
-      </div>
+      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#128214;</div></div><div class="book-info"><div class="book-tag">Foundational</div><div class="book-title">Numerology and the Divine Triangle</div><div class="book-author">Faith Javane &amp; Dusty Bunker</div><p class="book-desc">A comprehensive introduction to the Pythagorean system, connecting numerology with Tarot and astrology into a unified framework.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
+      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#128290;</div></div><div class="book-info"><div class="book-tag">Classical</div><div class="book-title">The Complete Book of Numerology</div><div class="book-author">David A. Phillips</div><p class="book-desc">An in-depth exploration of how numbers shape personality and destiny, written by one of numerology's most respected modern voices.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
+      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#10024;</div></div><div class="book-info"><div class="book-tag">Practical</div><div class="book-title">Numerology: Key To Your Inner Self</div><div class="book-author">Hans Decoz</div><p class="book-desc">A detailed, practical guide to calculating and interpreting all core numbers, with emphasis on personal and professional application.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
     </div>
-
-    <div class="books-section-title a2">· Sacred Mathematics ·</div>
+    <div class="books-section-title a2">&#xB7; Sacred Mathematics &#xB7;</div>
     <div class="book-grid a2">
-      <div class="book-card">
-        <div class="book-cover"><div class="book-cover-sigil">⬡</div></div>
-        <div class="book-info">
-          <div class="book-tag">Sacred Geometry</div>
-          <div class="book-title">A Beginner's Guide to Constructing the Universe</div>
-          <div class="book-author">Michael S. Schneider</div>
-          <p class="book-desc">How mathematics and geometry underlie the patterns of nature and consciousness — a foundational text for understanding numerical reality.</p>
-          <a href="#" class="book-btn">View Book →</a>
-        </div>
-      </div>
-      <div class="book-card">
-        <div class="book-cover"><div class="book-cover-sigil">🌌</div></div>
-        <div class="book-info">
-          <div class="book-tag">Philosophy</div>
-          <div class="book-title">The Secret Teachings of All Ages</div>
-          <div class="book-author">Manly P. Hall</div>
-          <p class="book-desc">A monumental encyclopedic work on esoteric philosophy, including Pythagorean number mysticism and its roots in ancient wisdom traditions.</p>
-          <a href="#" class="book-btn">View Book →</a>
-        </div>
-      </div>
-      <div class="book-card">
-        <div class="book-cover"><div class="book-cover-sigil">🔯</div></div>
-        <div class="book-info">
-          <div class="book-tag">Advanced</div>
-          <div class="book-title">The Power of Vedic Mathematics</div>
-          <div class="book-author">Atul Gupta</div>
-          <p class="book-desc">Exploring the ancient Indian mathematical traditions that reveal the elegant numerical structures underlying reality itself.</p>
-          <a href="#" class="book-btn">View Book →</a>
-        </div>
-      </div>
+      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#11041;</div></div><div class="book-info"><div class="book-tag">Sacred Geometry</div><div class="book-title">A Beginner's Guide to Constructing the Universe</div><div class="book-author">Michael S. Schneider</div><p class="book-desc">How mathematics and geometry underlie the patterns of nature and consciousness.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
+      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#127756;</div></div><div class="book-info"><div class="book-tag">Philosophy</div><div class="book-title">The Secret Teachings of All Ages</div><div class="book-author">Manly P. Hall</div><p class="book-desc">A monumental encyclopedic work on esoteric philosophy, including Pythagorean number mysticism and its roots in ancient wisdom traditions.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
+      <div class="book-card"></div>
     </div>
-
-    <div class="books-section-title a3">· Consciousness &amp; Simulation Theory ·</div>
+    <div class="books-section-title a3">&#xB7; Consciousness &amp; Simulation Theory &#xB7;</div>
     <div class="book-grid a3">
-      <div class="book-card">
-        <div class="book-cover"><div class="book-cover-sigil">💠</div></div>
-        <div class="book-info">
-          <div class="book-tag">Consciousness</div>
-          <div class="book-title">The Holographic Universe</div>
-          <div class="book-author">Michael Talbot</div>
-          <p class="book-desc">A groundbreaking work suggesting that the universe itself may be a kind of hologram — and what that means for the nature of reality and consciousness.</p>
-          <a href="#" class="book-btn">View Book →</a>
-        </div>
-      </div>
-      <div class="book-card">
-        <div class="book-cover"><div class="book-cover-sigil">∞</div></div>
-        <div class="book-info">
-          <div class="book-tag">Theory</div>
-          <div class="book-title">Are You Living in a Computer Simulation?</div>
-          <div class="book-author">Nick Bostrom</div>
-          <p class="book-desc">The philosophical paper that sparked modern simulation theory — a rigorous argument for why our reality may be computational in nature.</p>
-          <a href="#" class="book-btn">View Book →</a>
-        </div>
-      </div>
+      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#128306;</div></div><div class="book-info"><div class="book-tag">Consciousness</div><div class="book-title">The Holographic Universe</div><div class="book-author">Michael Talbot</div><p class="book-desc">A groundbreaking work suggesting that the universe itself may be a kind of hologram and what that means for the nature of reality.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
+      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#8734;</div></div><div class="book-info"><div class="book-tag">Theory</div><div class="book-title">Are You Living in a Computer Simulation?</div><div class="book-author">Nick Bostrom</div><p class="book-desc">The philosophical paper that sparked modern simulation theory — a rigorous argument for why our reality may be computational in nature.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
     </div>
-
   </div>
-</div>
-
-
-<!-- ═══════════════════════════════════════
-     ABOUT PAGE
-═══════════════════════════════════════ -->
-<div class="page" id="page-about">
-
-  <div class="about-hero a0">
-    <div class="about-avatar">✦</div>
-    <div class="section-eyebrow">About</div>
-    <h1 class="section-title">Simulation Source Code</h1>
-    <p class="section-body" style="max-width:500px; margin:0 auto; font-style:italic; color:var(--text-dim)">
-      A framework for understanding the numerical architecture encoded in your name, birth, and existence.
-    </p>
-  </div>
-
-  <div class="about-container">
-
-    <div class="about-section a1">
-      <div class="about-section-title">· The Philosophy ·</div>
-      <p>Simulation Source Code began with a simple question: what if numerology isn't mysticism — what if it's mathematics? What if the numbers encoded in your birth and name are not symbolic but literal? Not metaphor, but code.</p>
-      <p>Modern physics increasingly suggests that reality is information at its most fundamental level. The universe processes itself according to mathematical laws. If this is true, then the numerical patterns in your name and birth date are not random — they are parameters. Variables set at the moment your simulation was initialised.</p>
-      <p>SSC Numerology is the practice of reading those parameters and understanding what they mean for how your simulation unfolds.</p>
-    </div>
-
-    <div class="about-section a2">
-      <div class="about-section-title">· Our Approach ·</div>
-      <p>We use the Pythagorean system — the most widely applied system in Western numerology — as our foundation, while drawing on deeper esoteric traditions to enrich interpretation. Every reading delivers seven core frequencies, each calculated precisely from your birth data and name.</p>
-      <p>Interpretations are written to be honest, nuanced, and useful. We don't flatten complexity into empty positivity. Each frequency contains light and shadow, gift and challenge. A true reading honours the whole.</p>
-    </div>
-
-    <div class="about-section a3">
-      <div class="about-section-title">· Our Pillars ·</div>
-      <div class="pillars">
-        <div class="pillar">
-          <span class="pillar-icon">🔢</span>
-          <div class="pillar-title">Mathematical Precision</div>
-          <p class="pillar-text">Every number is calculated using rigorous, consistent methodology drawn from classical sources.</p>
-        </div>
-        <div class="pillar">
-          <span class="pillar-icon">📖</span>
-          <div class="pillar-title">Deep Interpretation</div>
-          <p class="pillar-text">Readings go beyond surface descriptions into the archetypes, patterns, and deeper meanings each number carries.</p>
-        </div>
-        <div class="pillar">
-          <span class="pillar-icon">🌌</span>
-          <div class="pillar-title">Open Framework</div>
-          <p class="pillar-text">We approach numerology as a framework for self-understanding, not as fixed fate. You are always the author.</p>
-        </div>
-        <div class="pillar">
-          <span class="pillar-icon">✦</span>
-          <div class="pillar-title">Continuing Study</div>
-          <p class="pillar-text">Our interpretations are continuously refined through research, study, and engagement with numerological traditions worldwide.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="about-section a4">
-      <div class="about-section-title">· Connect ·</div>
-      <p>Simulation Source Code is an evolving project. We share ongoing explorations of numerology, sacred mathematics, and the philosophy of simulated reality across our channels.</p>
-      <div class="social-row" style="margin-top:24px">
-        <a href="https://www.instagram.com/simulationsourcecode" target="_blank" class="social-btn" title="Instagram">📷</a>
-        <a href="https://www.youtube.com/@kytholek" target="_blank" class="social-btn" title="YouTube">▶️</a>
-        <a href="https://www.kytholek.com" target="_blank" class="social-btn" title="Website">🌐</a>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-
+</div><!-- /page-books -->
 <!-- ═══════════════════════════════════════
      BLOG PAGE
 ═══════════════════════════════════════ -->
@@ -1519,156 +1432,101 @@ footer {
 
 </div>
 
+<!-- ════ ABOUT PAGE ════ -->
+<div class="page" id="page-about">
+  <div class="about-hero a0">
+    <div class="about-avatar">&#10022;</div>
+    <div class="section-eyebrow">About</div>
+    <h1 class="section-title">Simulation Source Code</h1>
+    <p class="section-body" style="max-width:500px;margin:0 auto;font-style:italic;color:var(--text-dim)">A framework for understanding the numerical architecture encoded in your name, birth, and existence.</p>
+  </div>
+  <div class="about-container">
+    <div class="about-section a1">
+      <div class="about-section-title">&#xB7; The Philosophy &#xB7;</div>
+      <p>Simulation Source Code began with a simple question: what if numerology is not mysticism &#8212; what if it is mathematics? Modern physics increasingly suggests that reality is information at its most fundamental level. If this is true, the numerical patterns in your name and birth date are not random &#8212; they are parameters set at the moment your simulation was initialised.</p>
+    </div>
+    <div class="about-section a2">
+      <div class="about-section-title">&#xB7; Our Approach &#xB7;</div>
+      <p>We use the Pythagorean system as our foundation, while drawing on deeper esoteric traditions to enrich interpretation. Every reading delivers seven core frequencies, each calculated precisely from your birth data and name. Interpretations are honest, nuanced, and useful &#8212; each frequency contains light and shadow, gift and challenge.</p>
+    </div>
+    <div class="about-section a3">
+      <div class="about-section-title">&#xB7; Our Pillars &#xB7;</div>
+      <div class="pillars">
+        <div class="pillar"><span class="pillar-icon">&#128290;</span><div class="pillar-title">Mathematical Precision</div><p class="pillar-text">Every number is calculated using rigorous, consistent methodology drawn from classical sources.</p></div>
+        <div class="pillar"><span class="pillar-icon">&#128214;</span><div class="pillar-title">Deep Interpretation</div><p class="pillar-text">Readings go beyond surface descriptions into archetypes, patterns, and the deeper meanings each number carries.</p></div>
+        <div class="pillar"><span class="pillar-icon">&#127756;</span><div class="pillar-title">Open Framework</div><p class="pillar-text">We approach numerology as a framework for self-understanding, not fixed fate. You are always the author.</p></div>
+        <div class="pillar"><span class="pillar-icon">&#10022;</span><div class="pillar-title">Continuing Study</div><p class="pillar-text">Our interpretations are continuously refined through research, study, and engagement with traditions worldwide.</p></div>
+      </div>
+    </div>
+    <div class="about-section a4">
+      <div class="about-section-title">&#xB7; Connect &#xB7;</div>
+      <div class="social-row" style="margin-top:24px">
+        <a href="https://www.instagram.com/simulationsourcecode" target="_blank" class="social-btn">&#128247;</a>
+        <a href="https://www.youtube.com/@kytholek" target="_blank" class="social-btn">&#9654;&#65039;</a>
+        <a href="https://www.kytholek.com" target="_blank" class="social-btn">&#127760;</a>
+      </div>
+    </div>
+  </div>
+</div><!-- /page-about -->
 
-<!-- ═══════════════════════════════════════
-     PRIVACY PAGE
-═══════════════════════════════════════ -->
+<!-- ════ PRIVACY PAGE ════ -->
 <div class="page" id="page-privacy">
-
-  <div class="privacy-hero a0">
-    <div class="section-eyebrow">Legal</div>
-    <h1 class="section-title">Privacy Policy</h1>
-  </div>
-
+  <div class="privacy-hero a0"><div class="section-eyebrow">Legal</div><h1 class="section-title">Privacy Policy</h1></div>
   <div class="privacy-container">
-    <div class="privacy-updated a1">Last updated: January 2025</div>
-
-    <div class="privacy-highlight a1">
-      <p><strong style="color:var(--gold-light);font-family:'Cinzel',serif;font-size:12px;letter-spacing:.1em">In plain language:</strong> We collect minimal data, we do not sell your information, and everything you enter into the calculator stays on your device. Your readings are yours.</p>
-    </div>
-
-    <div class="privacy-section a2">
-      <div class="privacy-section-title"><span class="ps-num">1</span> Who We Are</div>
-      <p>Simulation Source Code ("SSC", "we", "us", "our") operates the SSC Numerology application and associated website. This Privacy Policy explains how we handle information in connection with your use of our services.</p>
-      <p>If you have questions about this policy, you can contact us at: <span style="color:var(--gold-dim)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9eeeecf7e8fffde7deedf7f3ebf2ffeaf7f1f0edf1ebecfdfbfdf1fafbb0fdf1f3">[email&#160;protected]</a></span></p>
-    </div>
-
-    <div class="privacy-section a2">
-      <div class="privacy-section-title"><span class="ps-num">2</span> Information We Collect</div>
-      <p>We collect only what is necessary to provide the service. This includes:</p>
-      <ul>
-        <li><strong>Calculator inputs</strong> — name and date of birth entered into the calculator. These are processed locally on your device and are not transmitted to our servers.</li>
-        <li><strong>Usage analytics</strong> — anonymised, aggregated data about how the app is used (e.g., which features are accessed). This data cannot be used to identify you.</li>
-        <li><strong>Crash reports</strong> — if the app crashes, a report may be sent that includes device type and OS version. No personal data is included.</li>
-        <li><strong>Email address</strong> — only if you voluntarily provide it (e.g., to subscribe to updates or access premium features).</li>
-      </ul>
-    </div>
-
-    <div class="privacy-section a2">
-      <div class="privacy-section-title"><span class="ps-num">3</span> How We Use Your Information</div>
-      <p>Any information we hold is used solely to:</p>
-      <ul>
-        <li>Provide and improve the numerology calculator and related features</li>
-        <li>Send service communications if you have an account</li>
-        <li>Understand aggregate usage patterns to improve the experience</li>
-        <li>Comply with legal obligations where required</li>
-      </ul>
-      <p>We do not use your data for advertising. We do not build profiles. We do not sell, rent, or trade your information to any third party.</p>
-    </div>
-
-    <div class="privacy-section a3">
-      <div class="privacy-section-title"><span class="ps-num">4</span> Data Storage &amp; Security</div>
-      <p>Calculator readings are stored locally on your device using your device's secure storage. They are not uploaded to our servers unless you explicitly choose to back them up or share them.</p>
-      <p>Where we do store data (e.g., account information), we use industry-standard encryption in transit and at rest. We retain data only for as long as necessary to provide the service or comply with legal requirements.</p>
-      <div class="privacy-highlight">
-        <p>Your birth name and birth date are never stored on SSC servers. All numerological calculations are performed on-device.</p>
-      </div>
-    </div>
-
-    <div class="privacy-section a3">
-      <div class="privacy-section-title"><span class="ps-num">5</span> Third-Party Services</div>
-      <p>We use a limited number of third-party services to operate the app:</p>
-      <ul>
-        <li><strong>Apple App Store / Google Play</strong> — for app distribution and in-app purchases. Their privacy policies govern data collected during those transactions.</li>
-        <li><strong>Analytics provider</strong> — we use privacy-focused, aggregated analytics. No personally identifiable information is shared.</li>
-      </ul>
-      <p>We do not integrate advertising networks, tracking pixels, or social media widgets that collect data about you.</p>
-    </div>
-
-    <div class="privacy-section a3">
-      <div class="privacy-section-title"><span class="ps-num">6</span> Your Rights</div>
-      <p>Depending on your location, you may have rights including:</p>
-      <ul>
-        <li>The right to access information we hold about you</li>
-        <li>The right to correct inaccurate information</li>
-        <li>The right to request deletion of your data</li>
-        <li>The right to withdraw consent at any time</li>
-        <li>The right to data portability</li>
-      </ul>
-      <p>To exercise any of these rights, contact us at <span style="color:var(--gold-dim)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7d0d0f140b1c1e043d0e141008111c091412130e12080f1e181e121918531e1210">[email&#160;protected]</a></span>. We will respond within 30 days.</p>
-    </div>
-
-    <div class="privacy-section a4">
-      <div class="privacy-section-title"><span class="ps-num">7</span> Children's Privacy</div>
-      <p>The SSC Numerology app is not directed at children under the age of 13. We do not knowingly collect personal information from children. If you believe a child has provided us with personal information, please contact us and we will promptly delete it.</p>
-    </div>
-
-    <div class="privacy-section a4">
-      <div class="privacy-section-title"><span class="ps-num">8</span> Changes to This Policy</div>
-      <p>We may update this Privacy Policy from time to time. When we do, we will update the "Last updated" date at the top of this page and, where the changes are significant, notify users through the app.</p>
-      <p>Your continued use of the app after any changes constitutes your acceptance of the updated policy.</p>
-    </div>
-
-    <div class="privacy-section a4">
-      <div class="privacy-section-title"><span class="ps-num">9</span> Contact</div>
-      <p>For any privacy-related questions, requests, or concerns, please contact:</p>
-      <div class="privacy-highlight">
-        <p><strong style="color:var(--gold-light)">Simulation Source Code</strong><br>
-        <span style="color:var(--text-dim)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="94e4e6fde2f5f7edd4e7fdf9e1f8f5e0fdfbfae7fbe1e6f7f1f7fbf0f1baf7fbf9">[email&#160;protected]</a></span></p>
-      </div>
-    </div>
-
+    <div class="privacy-updated a1">Last updated: March 6, 2026</div>
+    <div class="privacy-highlight a1"><p><strong style="color:var(--gold-light);font-family:'Cinzel',serif;font-size:12px;letter-spacing:.1em">In plain language:</strong> We collect minimal data, we do not sell your information, and everything you enter into the calculator stays on your device.</p></div>
+    <div class="privacy-section a2"><div class="privacy-section-title"><span class="ps-num">1</span> Who We Are</div><p>Simulation Source Code ("SSC") operates the SSC Numerology application and associated website. Contact: <span style="color:var(--gold-dim)">kytholek@gmail.com</span></p></div>
+    <div class="privacy-section a2"><div class="privacy-section-title"><span class="ps-num">2</span> Information We Collect</div><p>We collect only what is necessary: calculator inputs (processed locally, never transmitted), anonymised usage analytics, crash reports (device type/OS only), and email address only if voluntarily provided.</p></div>
+    <div class="privacy-section a2"><div class="privacy-section-title"><span class="ps-num">3</span> How We Use Your Information</div><p>Information is used solely to provide and improve the service, send communications if you have an account, and comply with legal obligations. We do not use your data for advertising and do not sell or trade it.</p></div>
+    <div class="privacy-section a3"><div class="privacy-section-title"><span class="ps-num">4</span> Data Storage &amp; Security</div><div class="privacy-highlight"><p>Your birth name and birth date are never stored on SSC servers. All numerological calculations are performed on-device.</p></div></div>
+    <div class="privacy-section a3"><div class="privacy-section-title"><span class="ps-num">5</span> Third-Party Services</div><p>We use Apple App Store / Google Play for distribution and privacy-focused aggregated analytics. We do not integrate advertising networks or tracking pixels.</p></div>
+    <div class="privacy-section a3"><div class="privacy-section-title"><span class="ps-num">6</span> Your Rights</div><p>You may have rights to access, correct, delete, or port your data. Contact <span style="color:var(--gold-dim)">privacy@simulationsourcecode.com</span> &#8212; we respond within 30 days.</p></div>
+    <div class="privacy-section a4"><div class="privacy-section-title"><span class="ps-num">7</span> Children's Privacy</div><p>The app is not directed at children under 13. We do not knowingly collect their personal information.</p></div>
+    <div class="privacy-section a4"><div class="privacy-section-title"><span class="ps-num">8</span> Changes to This Policy</div><p>When we update this policy we will revise the date above and notify users of significant changes through the app.</p></div>
+    <div class="privacy-section a4"><div class="privacy-section-title"><span class="ps-num">9</span> Contact</div><div class="privacy-highlight"><p><strong style="color:var(--gold-light)">Simulation Source Code</strong><br><span style="color:var(--text-dim)">kytholek@gmail.com</span></p></div></div>
   </div>
-</div>
+</div><!-- /page-privacy -->
 
-
-<!-- ═══════════════════════════════════════
-     FOOTER
-═══════════════════════════════════════ -->
+<!-- ════ FOOTER ════ -->
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
       <div class="footer-logo-text">Simulation Source Code</div>
-      <p class="footer-tagline">Seven frequencies encoded in your birth and name — the complete architecture of your simulation.</p>
+      <p class="footer-tagline">Seven frequencies encoded in your birth and name &#8212; the complete architecture of your simulation.</p>
       <div class="social-row">
-        <a href="https://www.instagram.com/simulationsourcecode" target="_blank" class="social-btn" title="Instagram">📷</a>
-        <a href="https://www.youtube.com/@kytholek" target="_blank" class="social-btn" title="YouTube">▶️</a>
-        <a href="https://www.kytholek.com" target="_blank" class="social-btn" title="Website">🌐</a>
+        <a href="https://www.instagram.com/simulationsourcecode" target="_blank" class="social-btn">&#128247;</a>
+        <a href="https://www.youtube.com/@kytholek" target="_blank" class="social-btn">&#9654;&#65039;</a>
+        <a href="https://www.kytholek.com" target="_blank" class="social-btn">&#127760;</a>
       </div>
     </div>
-    <div>
-      <div class="footer-col-title">Navigate</div>
-      <div class="footer-links">
-        <button class="footer-link" onclick="showPage('home')">Home</button>
-        <button class="footer-link" onclick="showPage('calculator')">Calculator</button>
-        <button class="footer-link" onclick="showPage('books')">Books</button>
-        <button class="footer-link" onclick="showPage('blog')">Blog</button>
-        <button class="footer-link" onclick="showPage('about')">About</button>
-      </div>
-    </div>
-    <div>
-      <div class="footer-col-title">Legal</div>
-      <div class="footer-links">
-        <button class="footer-link" onclick="showPage('privacy')">Privacy Policy</button>
-        <button class="footer-link" onclick="showPage('privacy')">Terms of Use</button>
-      </div>
-    </div>
-    <div>
-      <div class="footer-col-title">Download</div>
-      <div class="footer-links">
-        <a href="#" class="footer-link" onclick="alert('App store link coming soon!')">App Store</a>
-        <a href="#" class="footer-link" onclick="alert('Play store link coming soon!')">Google Play</a>
-      </div>
-    </div>
+    <div><div class="footer-col-title">Navigate</div><div class="footer-links">
+      <button class="footer-link" onclick="showPage('home')">Home</button>
+      <button class="footer-link" onclick="showPage('calculator')">Calculator</button>
+      <button class="footer-link" onclick="showPage('books')">Books</button>
+      <button class="footer-link" onclick="showPage('blog')">Blog</button>
+      <button class="footer-link" onclick="showPage('about')">About</button>
+    </div></div>
+    <div><div class="footer-col-title">Legal</div><div class="footer-links">
+      <button class="footer-link" onclick="showPage('privacy')">Privacy Policy</button>
+      <button class="footer-link" onclick="showPage('privacy')">Terms of Use</button>
+    </div></div>
+    <div><div class="footer-col-title">Download</div><div class="footer-links">
+      <a href="#" class="footer-link" onclick="alert('Coming soon!')">App Store</a>
+      <a href="#" class="footer-link" onclick="alert('Coming soon!')">Google Play</a>
+    </div></div>
   </div>
   <div class="footer-bottom">
-    <div class="footer-copy">© 2025 Simulation Source Code · All Rights Reserved</div>
-    <div class="footer-copy">✦ &nbsp;Pythagorean Numerology System</div>
+    <div class="footer-copy">&#169; 2025 Simulation Source Code &middot; All Rights Reserved</div>
+    <div class="footer-copy">&#10022; &nbsp;Pythagorean Numerology System</div>
   </div>
 </footer>
-
-
 <script>
+
+// ─── Init (called after all HTML fragments are loaded) ───
+function initApp() {
+  showPage('home');
+}
+
 // ─── Page routing ───
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -1822,6 +1680,377 @@ function filterBlog(category, btn) {
     card.style.display = show ? 'flex' : 'none';
   });
 }
+
+
+
+// ══════════════════════════════════════════════════════════
+// SIMULATION DESCENT — Canvas Backgrounds
+// ══════════════════════════════════════════════════════════
+(function () {
+  'use strict';
+  var DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+  /* ── resize helper ── */
+  function resize(canvas) {
+    var p  = canvas.parentElement;
+    var w  = p.offsetWidth;
+    var h  = p.offsetHeight;
+    canvas.width  = Math.round(w * DPR);
+    canvas.height = Math.round(h * DPR);
+    canvas.style.width  = w + 'px';
+    canvas.style.height = h + 'px';
+    return { w: canvas.width, h: canvas.height };
+  }
+
+  /* ── canvas fade-in on scroll via IntersectionObserver ── */
+  function initFades() {
+    if (!window.IntersectionObserver) {
+      document.querySelectorAll('.layer-canvas').forEach(function(c){ c.style.opacity = 1; });
+      return;
+    }
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) { if (e.isIntersecting) e.target.style.opacity = 1; });
+    }, { threshold: 0.04, rootMargin: '0px 0px -4% 0px' });
+    document.querySelectorAll('.layer-canvas').forEach(function(c){ io.observe(c); });
+  }
+
+  /* ── layer badge slide-in ── */
+  function initBadges() {
+    if (!window.IntersectionObserver) {
+      document.querySelectorAll('.layer-label').forEach(function(l){ l.classList.add('visible'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e){ if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.layer-label').forEach(function(l){ io.observe(l); });
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     LAYER 2 — PHYSICAL SUBSTRATE
+     Smooth slow-drifting geological gradient blobs.
+     Thin amber vein lines radiate from a centre point.
+     No noise, no per-pixel loops — pure radial/linear gradients.
+  ───────────────────────────────────────────────────────── */
+  function initSolid() {
+    var canvas = document.getElementById('canvas-solid');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var w, h, t = 0, veins = [];
+
+    /* Blob definitions — each drifts slowly around its anchor */
+    var BLOBS = [
+      { ax:0.20, ay:0.30, ox:0, oy:0, spx:0.00022, spy:0.00014, r:0.72, c0:'rgba(58,38,16,', c1:'rgba(32,20,6,' },
+      { ax:0.78, ay:0.70, ox:0, oy:0, spx:0.00018, spy:0.00018, r:0.65, c0:'rgba(46,30,12,', c1:'rgba(26,16,4,' },
+      { ax:0.50, ay:1.05, ox:0, oy:0, spx:0.00015, spy:0.00010, r:0.80, c0:'rgba(72,50,18,', c1:'rgba(40,24,6,' },
+      { ax:0.15, ay:0.80, ox:0, oy:0, spx:0.00020, spy:0.00016, r:0.55, c0:'rgba(42,27,10,', c1:'rgba(24,14,3,' },
+    ];
+
+    function buildVeins() {
+      veins = [];
+      var cx = w * 0.5, cy = h * 0.44;
+      var N = 11;
+      for (var i = 0; i < N; i++) {
+        var a    = (i / N) * Math.PI * 2;
+        var len  = (0.16 + Math.random() * 0.14) * Math.max(w, h);
+        var bend = (Math.random() - 0.5) * 0.28;
+        var x2   = cx + Math.cos(a + bend) * len;
+        var y2   = cy + Math.sin(a + bend) * len;
+        veins.push({ x1: cx, y1: cy, x2: x2, y2: y2, ph: i * 0.65 });
+        /* one branch per vein */
+        var bx = cx + (x2-cx)*0.42 + Math.cos(a+1.5)*len*0.14;
+        var by = cy + (y2-cy)*0.42 + Math.sin(a+1.5)*len*0.14;
+        veins.push({ x1: cx+(x2-cx)*0.42, y1: cy+(y2-cy)*0.42, x2: bx, y2: by, ph: i*0.65+1.3 });
+      }
+    }
+
+    function seed() {
+      var d = resize(canvas);
+      w = d.w; h = d.h;
+      buildVeins();
+    }
+
+    function draw() {
+      t += 0.22;
+      ctx.clearRect(0, 0, w, h);
+
+      /* base — very dark warm black */
+      var bg = ctx.createRadialGradient(w*0.40, h*0.36, 0, w*0.40, h*0.36, Math.max(w,h)*0.95);
+      bg.addColorStop(0, '#0e0a06');
+      bg.addColorStop(0.55, '#080603');
+      bg.addColorStop(1, '#030201');
+      ctx.fillStyle = bg; ctx.fillRect(0,0,w,h);
+
+      /* geological blobs */
+      BLOBS.forEach(function(b) {
+        b.ox += b.spx; b.oy += b.spy;
+        var bx = b.ax + Math.sin(b.ox) * 0.12;
+        var by = b.ay + Math.cos(b.oy) * 0.10;
+        var br = Math.max(w,h) * b.r * (0.88 + 0.12 * Math.sin(t*0.003 + b.ax*5));
+        var grd = ctx.createRadialGradient(bx*w, by*h, 0, bx*w, by*h, br);
+        grd.addColorStop(0,   b.c0 + '0.20)');
+        grd.addColorStop(0.5, b.c1 + '0.09)');
+        grd.addColorStop(1,   'transparent');
+        ctx.fillStyle = grd; ctx.fillRect(0,0,w,h);
+      });
+
+      /* amber veins */
+      ctx.save();
+      veins.forEach(function(v) {
+        var p = 0.22 + 0.78 * (0.5 + 0.5 * Math.sin(t*0.005 + v.ph));
+        /* soft outer glow */
+        ctx.lineWidth = 3; ctx.shadowBlur = 16;
+        ctx.shadowColor = 'rgba(215,165,55,0.45)';
+        ctx.strokeStyle = 'rgba(175,130,42,' + (0.04*p) + ')';
+        ctx.beginPath(); ctx.moveTo(v.x1,v.y1); ctx.lineTo(v.x2,v.y2); ctx.stroke();
+        /* crisp core line */
+        ctx.lineWidth = 0.6; ctx.shadowBlur = 3;
+        ctx.strokeStyle = 'rgba(235,190,80,' + (0.38*p) + ')';
+        ctx.beginPath(); ctx.moveTo(v.x1,v.y1); ctx.lineTo(v.x2,v.y2); ctx.stroke();
+      });
+      ctx.restore();
+
+      /* upwelling heat from bottom */
+      var heat = ctx.createLinearGradient(0, h*0.55, 0, h);
+      heat.addColorStop(0, 'transparent');
+      heat.addColorStop(1, 'rgba(110,68,18,0.14)');
+      ctx.fillStyle = heat; ctx.fillRect(0,0,w,h);
+
+      requestAnimationFrame(draw);
+    }
+
+    seed(); window.addEventListener('resize', seed); draw();
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     LAYER 3 — HOLOGRAPHIC FIELD
+     Slow aurora blobs (elliptical radial gradients in teal/blue).
+     Clean perspective grid with glowing horizon line.
+     Small bright node particles drift across the field.
+  ───────────────────────────────────────────────────────── */
+  function initHolo() {
+    var canvas = document.getElementById('canvas-holo');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var w, h, t = 0, nodes = [];
+
+    /* Aurora cloud definitions */
+    var CLOUDS = [
+      { ax:0.20, ay:0.28, ox:0, oy:0, spx:0.00018, spy:0.00013, rx:0.38, ry:0.20, ph:0.0, cyan:true  },
+      { ax:0.75, ay:0.55, ox:0, oy:0, spx:0.00014, spy:0.00017, rx:0.32, ry:0.16, ph:1.4, cyan:false },
+      { ax:0.45, ay:0.78, ox:0, oy:0, spx:0.00020, spy:0.00010, rx:0.42, ry:0.22, ph:2.8, cyan:true  },
+      { ax:0.82, ay:0.20, ox:0, oy:0, spx:0.00016, spy:0.00014, rx:0.28, ry:0.15, ph:4.2, cyan:false },
+      { ax:0.12, ay:0.65, ox:0, oy:0, spx:0.00012, spy:0.00018, rx:0.30, ry:0.18, ph:5.6, cyan:true  },
+    ];
+
+    function buildNodes() {
+      nodes = [];
+      for (var i = 0; i < 9; i++) {
+        nodes.push({
+          x: Math.random(), y: Math.random(),
+          vx: (Math.random()-0.5)*0.00020, vy: (Math.random()-0.5)*0.00015,
+          r: 0.018 + Math.random()*0.022, ph: Math.random()*Math.PI*2
+        });
+      }
+    }
+
+    function seed() {
+      var d = resize(canvas); w = d.w; h = d.h; buildNodes();
+    }
+
+    function draw() {
+      t += 0.35;
+      ctx.clearRect(0, 0, w, h);
+
+      /* base */
+      var bg = ctx.createLinearGradient(0,0,0,h);
+      bg.addColorStop(0, '#010508'); bg.addColorStop(0.5, '#020609'); bg.addColorStop(1, '#010406');
+      ctx.fillStyle = bg; ctx.fillRect(0,0,w,h);
+
+      /* aurora clouds */
+      CLOUDS.forEach(function(c) {
+        c.ox += c.spx; c.oy += c.spy;
+        var cx = c.ax + Math.sin(c.ox) * 0.10;
+        var cy = c.ay + Math.cos(c.oy) * 0.08;
+        var rX = c.rx * w * (0.85 + 0.15*Math.sin(t*0.004+c.ph));
+        var rY = c.ry * h * (0.85 + 0.15*Math.cos(t*0.004+c.ph*0.7));
+        var pulse = 0.5 + 0.5 * Math.sin(t*0.006 + c.ph*1.3);
+
+        ctx.save();
+        ctx.translate(cx*w, cy*h);
+        ctx.scale(1, rY/rX);
+        var grd = ctx.createRadialGradient(0,0,0,0,0,rX);
+        if (c.cyan) {
+          grd.addColorStop(0,   'rgba(0,195,218,' + (0.10*pulse) + ')');
+          grd.addColorStop(0.5, 'rgba(0,155,188,' + (0.04*pulse) + ')');
+        } else {
+          grd.addColorStop(0,   'rgba(18,75,185,' + (0.08*pulse) + ')');
+          grd.addColorStop(0.5, 'rgba(8,45,135,'  + (0.03*pulse) + ')');
+        }
+        grd.addColorStop(1, 'transparent');
+        ctx.fillStyle = grd;
+        ctx.beginPath(); ctx.arc(0,0,rX,0,Math.PI*2); ctx.fill();
+        ctx.restore();
+      });
+
+      /* perspective grid */
+      ctx.save();
+      ctx.lineWidth = 0.65;
+      var hor = h * 0.40;
+
+      /* horizontals — exponentially spaced, fade near horizon */
+      for (var i = 1; i < 26; i++) {
+        var frac = Math.pow(i/26, 2.4);
+        var y    = hor + (h - hor) * frac;
+        var a    = Math.pow(1-frac, 1.6) * 0.26;
+        ctx.strokeStyle = 'rgba(0,198,218,' + a + ')';
+        ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
+      }
+
+      /* verticals — converge at vanishing point */
+      for (var i = -15; i <= 15; i++) {
+        var ex = w*0.5 + (i/15) * w * 0.55;
+        var ca = Math.pow(1 - Math.abs(i/15), 2.0) * 0.13;
+        ctx.strokeStyle = 'rgba(0,195,218,' + ca + ')';
+        ctx.beginPath(); ctx.moveTo(w*0.5, hor); ctx.lineTo(ex, h+80); ctx.stroke();
+      }
+
+      /* horizon glow */
+      var hg = ctx.createLinearGradient(0, hor-3, 0, hor+3);
+      hg.addColorStop(0, 'transparent'); hg.addColorStop(0.5,'rgba(0,215,225,0.32)'); hg.addColorStop(1,'transparent');
+      ctx.fillStyle = hg; ctx.fillRect(0, hor-3, w, 6);
+      var hb = ctx.createLinearGradient(0, hor-70, 0, hor+70);
+      hb.addColorStop(0,'transparent'); hb.addColorStop(0.5,'rgba(0,190,215,0.035)'); hb.addColorStop(1,'transparent');
+      ctx.fillStyle = hb; ctx.fillRect(0, hor-70, w, 140);
+      ctx.restore();
+
+      /* drifting nodes */
+      nodes.forEach(function(n) {
+        n.x += n.vx; n.y += n.vy;
+        if (n.x<0||n.x>1) n.vx*=-1;
+        if (n.y<0||n.y>1) n.vy*=-1;
+        var p  = 0.5 + 0.5*Math.sin(t*0.022 + n.ph);
+        var nr = n.r * Math.max(w,h) * (0.6+0.4*p);
+        var grd = ctx.createRadialGradient(n.x*w,n.y*h,0,n.x*w,n.y*h,nr);
+        grd.addColorStop(0,   'rgba(55,225,242,' + (0.60*p) + ')');
+        grd.addColorStop(0.4, 'rgba(0,175,212,' + (0.18*p) + ')');
+        grd.addColorStop(1,   'transparent');
+        ctx.fillStyle = grd;
+        ctx.beginPath(); ctx.arc(n.x*w,n.y*h,nr,0,Math.PI*2); ctx.fill();
+      });
+
+      requestAnimationFrame(draw);
+    }
+
+    seed(); window.addEventListener('resize', seed); draw();
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     LAYER 4 — SOURCE CODE
+     Three depth-layers of matrix rain (far/dim, mid, near/gold).
+     Proper DPR scaling. Numerology glyphs in near layer.
+     Strong vignette for a clean, moody look.
+  ───────────────────────────────────────────────────────── */
+  function initMatrix() {
+    var canvas = document.getElementById('canvas-matrix');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var w, h, layers = [];
+
+    var GLYPHS = '0123456789ΩΨΛφπ∑Δ∞∂⓵⓶⓷⓸⓹⓺';
+    var LATIN  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    function rch(s){ return s[Math.floor(Math.random()*s.length)]; }
+
+    /* depth layer configs (values in CSS px, scaled by DPR below) */
+    var DEFS = [
+      /* far  */ { fsPx:10, gapMul:2.0, speed:0.16, opa:0.12, rgb:[0,140,32],    leadRGB:null,       chars:GLYPHS+LATIN },
+      /* mid  */ { fsPx:13, gapMul:1.8, speed:0.30, opa:0.30, rgb:[0,182,46],    leadRGB:null,       chars:GLYPHS },
+      /* near */ { fsPx:15, gapMul:4.2, speed:0.58, opa:0.78, rgb:[0,205,52],    leadRGB:[218,182,62], chars:GLYPHS },
+    ];
+
+    function seed() {
+      var d = resize(canvas); w = d.w; h = d.h;
+      layers = DEFS.map(function(def) {
+        var fs  = def.fsPx * DPR;
+        var gap = def.gapMul * def.fsPx * DPR;
+        var n   = Math.floor(w / gap);
+        var drops = [];
+        for (var i=0;i<n;i++) drops.push(-(Math.random()*(h/fs)*1.3));
+        return { def:def, fs:fs, gap:gap, n:n, drops:drops };
+      });
+    }
+
+    function draw() {
+      /* persistent fade — leave short trails */
+      ctx.fillStyle = 'rgba(0,0,0,0.048)';
+      ctx.fillRect(0,0,w,h);
+
+      layers.forEach(function(L) {
+        var def = L.def;
+        ctx.font = L.fs + 'px "Courier New",monospace';
+
+        for (var i=0;i<L.n;i++) {
+          var x = i * L.gap;
+          var y = L.drops[i] * L.fs;
+
+          if (y > -L.fs && y < h + L.fs) {
+            /* lead char */
+            var useGold = def.leadRGB && Math.random() > 0.12;
+            if (useGold) {
+              ctx.fillStyle = 'rgba('+def.leadRGB[0]+','+def.leadRGB[1]+','+def.leadRGB[2]+','+(def.opa*(0.72+0.28*Math.random()))+')';
+            } else if (Math.random() > 0.97) {
+              ctx.fillStyle = 'rgba(255,255,255,'+(def.opa*0.85)+')';
+            } else {
+              ctx.fillStyle = 'rgba('+def.rgb[0]+','+def.rgb[1]+','+def.rgb[2]+','+(def.opa*(0.55+0.45*Math.random()))+')';
+            }
+            if (y>0 && y<h) ctx.fillText(rch(def.chars), x, y);
+
+            /* fading trail */
+            for (var s=1;s<=5;s++) {
+              var ty = y - s*L.fs;
+              if (ty < 0) break;
+              var ta = def.opa * Math.pow(0.50, s);
+              ctx.fillStyle = 'rgba(0,'+def.rgb[1]+','+def.rgb[2]+','+ta+')';
+              ctx.fillText(rch('0123456789'), x, ty);
+            }
+          }
+
+          L.drops[i] += def.speed;
+          if (L.drops[i]*L.fs > h + L.fs*6 && Math.random() > 0.974) {
+            L.drops[i] = -(Math.random()*28);
+          }
+        }
+      });
+
+      /* bottom green fog */
+      var fog = ctx.createLinearGradient(0, h*0.62, 0, h);
+      fog.addColorStop(0,'transparent'); fog.addColorStop(1,'rgba(0,32,8,0.42)');
+      ctx.fillStyle = fog; ctx.fillRect(0,h*0.62,w,h*0.38);
+
+      /* radial vignette */
+      var vg = ctx.createRadialGradient(w*.5,h*.42,h*.16,w*.5,h*.42,h*.90);
+      vg.addColorStop(0,'transparent'); vg.addColorStop(1,'rgba(0,0,0,0.78)');
+      ctx.fillStyle = vg; ctx.fillRect(0,0,w,h);
+
+      requestAnimationFrame(draw);
+    }
+
+    seed(); window.addEventListener('resize', seed); draw();
+  }
+
+  /* ── Boot ── */
+  function boot() {
+    setTimeout(function(){
+      initSolid(); initHolo(); initMatrix();
+      initFades(); initBadges();
+    }, 60);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+})();
+
 </script>
 </body>
 </html>
