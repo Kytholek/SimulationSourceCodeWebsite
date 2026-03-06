@@ -768,166 +768,539 @@ footer {
 
 
 /* ══════════════════════════════════════════════════════════
+   ADMIN CMS PANEL
+══════════════════════════════════════════════════════════ */
+#admin-overlay {
+  display: none; position: fixed; inset: 0; z-index: 9000;
+  background: rgba(5,4,10,.85); backdrop-filter: blur(6px);
+}
+#admin-overlay.open { display: flex; align-items: center; justify-content: center; }
+
+#admin-login {
+  display: none; align-items: center; justify-content: center;
+  position: absolute; inset: 0;
+}
+#admin-login-box {
+  background: var(--deep); border: 1px solid var(--border);
+  border-radius: 8px; padding: 40px; width: 340px; text-align: center;
+}
+
+#admin-panel {
+  display: none; flex-direction: column;
+  width: 92vw; max-width: 900px; height: 88vh;
+  background: var(--deep); border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+}
+#admin-panel.open { display: flex; }
+
+#admin-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-bottom: 1px solid var(--border-dim);
+  background: rgba(0,0,0,.3); flex-shrink: 0;
+}
+
+.admin-tab-btn {
+  background: none; border: 1px solid transparent; color: var(--text-dim);
+  border-radius: 4px; padding: 6px 14px; cursor: pointer;
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: .2em;
+  text-transform: uppercase; transition: all .2s;
+}
+.admin-tab-btn:hover  { color: var(--text); border-color: var(--border); }
+.admin-tab-btn.active { color: var(--gold); border-color: var(--gold-dim); background: rgba(201,168,76,.06); }
+
+.admin-tab {
+  display: none; flex: 1; overflow-y: auto; padding: 20px 24px;
+}
+.admin-tab.active { display: block; }
+
+/* Write tab inputs */
+#admin-title, #admin-excerpt, #admin-date {
+  background: rgba(255,255,255,.04); border: 1px solid var(--border-dim);
+  border-radius: 4px; color: var(--text); font-family: 'EB Garamond', serif;
+  font-size: 16px; padding: 10px 14px; outline: none; width: 100%;
+  transition: border-color .2s;
+}
+#admin-title:focus, #admin-excerpt:focus, #admin-date:focus {
+  border-color: rgba(201,168,76,.4);
+}
+#admin-title { font-size: 18px; }
+
+#admin-category {
+  background: rgba(255,255,255,.04); border: 1px solid var(--border-dim);
+  border-radius: 4px; color: var(--text); font-family: 'Cinzel', serif;
+  font-size: 10px; letter-spacing: .1em; padding: 10px 14px;
+  outline: none; cursor: pointer;
+}
+
+#admin-toolbar {
+  display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap;
+}
+#admin-toolbar button {
+  background: rgba(255,255,255,.05); border: 1px solid var(--border-dim);
+  color: var(--text-dim); border-radius: 3px; padding: 5px 10px;
+  cursor: pointer; font-size: 13px; transition: all .15s;
+}
+#admin-toolbar button:hover { color: var(--gold); border-color: var(--gold-dim); }
+
+#admin-body {
+  width: 100%; min-height: 320px; resize: vertical;
+  background: rgba(0,0,0,.2); border: 1px solid var(--border-dim);
+  border-radius: 4px; color: var(--text); font-family: 'EB Garamond', serif;
+  font-size: 16px; line-height: 1.7; padding: 14px 16px; outline: none;
+  transition: border-color .2s;
+}
+#admin-body:focus { border-color: rgba(201,168,76,.35); }
+
+#admin-export-output {
+  width: 100%; background: rgba(0,0,0,.3); border: 1px solid var(--border-dim);
+  border-radius: 4px; color: var(--teal-light); padding: 14px 16px;
+  outline: none; resize: vertical; line-height: 1.6;
+}
+
+#admin-actions {
+  display: flex; justify-content: flex-end; gap: 10px;
+  margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-dim);
+}
+
+.admin-btn-primary {
+  background: var(--gold); color: #0a0800;
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: .2em;
+  border: none; border-radius: 4px; padding: 10px 22px; cursor: pointer;
+  text-transform: uppercase; transition: background .2s;
+}
+.admin-btn-primary:hover { background: var(--gold-light); }
+
+.admin-btn-ghost {
+  background: none; color: var(--text-dim);
+  border: 1px solid var(--border-dim); border-radius: 4px;
+  padding: 10px 18px; cursor: pointer; font-size: 13px;
+  font-family: 'EB Garamond', serif; transition: all .2s;
+}
+.admin-btn-ghost:hover { color: var(--text); border-color: var(--border); }
+
+/* Posts list */
+.admin-post-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0; border-bottom: 1px solid var(--border-dim); gap: 16px;
+}
+.admin-post-title { color: var(--text); font-size: 15px; margin-bottom: 4px; }
+.admin-post-meta  { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--text-dim); }
+.admin-post-btns  { display: flex; gap: 8px; flex-shrink: 0; }
+.admin-post-edit {
+  background: none; border: 1px solid var(--border-dim); color: var(--gold-dim);
+  border-radius: 3px; padding: 5px 12px; cursor: pointer; font-size: 12px;
+  transition: all .15s;
+}
+.admin-post-edit:hover { color: var(--gold); border-color: var(--gold); }
+.admin-post-delete {
+  background: none; border: 1px solid rgba(160,40,40,.3); color: rgba(200,80,80,.6);
+  border-radius: 3px; padding: 5px 12px; cursor: pointer; font-size: 12px;
+  transition: all .15s;
+}
+.admin-post-delete:hover { color: #e06060; border-color: #e06060; }
+
+.admin-empty {
+  color: var(--text-muted); font-style: italic; text-align: center;
+  padding: 40px 0; font-size: 15px;
+}
+
+/* Preview panel mimics live blog post style */
+.preview-banner { font-family: 'Cinzel', serif; font-size: 22px; color: var(--gold-light); margin: 12px 0 8px; line-height: 1.3; }
+.preview-meta   { display: flex; gap: 10px; align-items: center; margin-bottom: 24px; color: var(--text-muted); font-size: 13px; }
+.preview-body   { font-size: 17px; line-height: 1.8; }
+.preview-body h3 { font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: .15em; color: var(--gold); text-transform: uppercase; margin: 28px 0 12px; }
+.preview-body p  { margin-bottom: 16px; color: var(--text-dim); }
+.preview-body blockquote { border-left: 2px solid var(--gold-dim); padding: 10px 0 10px 20px; color: var(--text-dim); font-style: italic; margin: 20px 0; }
+.preview-body strong { color: var(--text); }
+
+/* Toast notification */
+#admin-toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--panel); border: 1px solid var(--border); border-radius: 6px;
+  padding: 10px 22px; font-size: 14px; color: var(--text); z-index: 9999;
+  opacity: 0; transition: opacity .25s, transform .25s; pointer-events: none;
+  white-space: nowrap;
+}
+#admin-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ══════════════════════════════════════════════════════════
    SIMULATION DESCENT LAYERS
 ══════════════════════════════════════════════════════════ */
-
 .sim-layer {
-  position: relative;
-  overflow: hidden;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative; overflow: hidden; min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
 }
-
-/* Canvas — hidden until scrolled into view */
 .layer-canvas {
-  position: absolute;
-  inset: 0; width: 100%; height: 100%;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 2s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity;
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; opacity: 0;
+  transition: opacity 2s cubic-bezier(0.16, 1, 0.3, 1); will-change: opacity;
 }
-
 .sim-content {
-  position: relative;
-  z-index: 2;
-  max-width: 1100px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 110px 24px;
-  text-align: center;
+  position: relative; z-index: 2; max-width: 1100px; width: 100%;
+  margin: 0 auto; padding: 110px 24px; text-align: center;
 }
-
-/* ── Seamless top/bottom bleed into --void on every layer ── */
-.sim-layer::before,
-.sim-layer::after {
-  content: '';
-  position: absolute;
-  left: 0; right: 0;
-  height: 220px;
-  z-index: 4;
-  pointer-events: none;
+.sim-layer::before, .sim-layer::after {
+  content: ''; position: absolute; left: 0; right: 0; height: 220px;
+  z-index: 4; pointer-events: none;
 }
-.sim-layer::before {
-  top: 0;
-  background: linear-gradient(to bottom, #05040a 0%, transparent 100%);
-}
-.sim-layer::after {
-  bottom: 0;
-  background: linear-gradient(to top, #05040a 0%, transparent 100%);
-}
-
-/* Layer badge */
+.sim-layer::before { top: 0; background: linear-gradient(to bottom, #05040a 0%, transparent 100%); }
+.sim-layer::after  { bottom: 0; background: linear-gradient(to top, #05040a 0%, transparent 100%); }
 .layer-label {
-  position: absolute;
-  top: 32px; right: 32px;
-  z-index: 10;
+  position: absolute; top: 32px; right: 32px; z-index: 10;
   display: flex; flex-direction: column; align-items: flex-end; gap: 3px;
   opacity: 0; transform: translateY(-6px);
   transition: opacity 1.2s ease 0.4s, transform 1.2s ease 0.4s;
 }
 .layer-label.visible { opacity: 1; transform: translateY(0); }
 .layer-depth {
-  font-family: 'Cinzel', serif; font-size: 7px;
-  letter-spacing: .45em; color: rgba(201,168,76,.28); text-transform: uppercase;
+  font-family: 'Cinzel', serif; font-size: 7px; letter-spacing: .45em;
+  color: rgba(201,168,76,.28); text-transform: uppercase;
 }
 .layer-name {
-  font-family: 'Cinzel', serif; font-size: 9px;
-  letter-spacing: .28em; color: rgba(201,168,76,.52); text-transform: uppercase;
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: .28em;
+  color: rgba(201,168,76,.52); text-transform: uppercase;
 }
-
-/* ════ LAYER 2 — Physical Substrate (warm amber-stone) ════ */
 .sim-layer-2 { background: #05040a; }
 .sim-layer-2::after { background: linear-gradient(to top, #05040a 0%, transparent 100%); }
 .sim-layer-2 .sim-eyebrow { color: rgba(195,162,88,.7); letter-spacing: .4em; }
 .sim-layer-2 .section-title { color: #c4b47e; }
 .sim-layer-2 .section-body  { color: rgba(148,130,90,.78); }
-
-/* ════ LAYER 3 — Holographic Field (deep teal) ════ */
 .sim-layer-3 { background: #01040c; }
 .sim-layer-3::before { background: linear-gradient(to bottom, #05040a 0%, transparent 100%); }
-.sim-layer-3::after  { background: linear-gradient(to top,   #01040c 0%, transparent 100%); }
+.sim-layer-3::after  { background: linear-gradient(to top, #01040c 0%, transparent 100%); }
 .sim-layer-3 .sim-eyebrow { color: rgba(45,200,215,.88); letter-spacing: .4em; }
-.sim-layer-3 .section-title {
-  color: #cef2f4;
-  text-shadow: 0 0 60px rgba(0,185,210,.25), 0 0 120px rgba(0,145,190,.1);
-}
-.sim-layer-3 .section-body { color: rgba(80,200,210,.82); }
-
-.holo-card {
-  background: rgba(0,120,145,.07) !important;
-  border-color: rgba(0,195,215,.15) !important;
-  transition: border-color .5s ease, box-shadow .5s ease !important;
-}
-.holo-card:hover {
-  border-color: rgba(0,195,215,.4) !important;
-  box-shadow: 0 0 36px rgba(0,190,215,.1), inset 0 0 20px rgba(0,190,215,.04) !important;
-}
+.sim-layer-3 .section-title { color: #cef2f4; text-shadow: 0 0 60px rgba(0,185,210,.25); }
+.sim-layer-3 .section-body  { color: rgba(80,200,210,.82); }
+.holo-card { background:rgba(0,120,145,.07)!important; border-color:rgba(0,195,215,.15)!important; transition:border-color .5s ease,box-shadow .5s ease!important; }
+.holo-card:hover { border-color:rgba(0,195,215,.4)!important; box-shadow:0 0 36px rgba(0,190,215,.1),inset 0 0 20px rgba(0,190,215,.04)!important; }
 .holo-card .freq-number { color: rgba(0,210,220,.85); }
 .holo-card .freq-name   { color: #96e2e4; }
 .holo-card .freq-desc   { color: rgba(120,215,218,.65); }
-
-/* ════ LAYER 4 — Source Code (matrix green) ════ */
 .sim-layer-4 { background: #000; }
 .sim-layer-4::before { background: linear-gradient(to bottom, #01040c 0%, transparent 100%); }
-.sim-layer-4::after  { background: linear-gradient(to top,   #000    0%, transparent 100%); }
-.sim-layer-4 .sim-eyebrow {
-  color: rgba(0,240,65,.65); letter-spacing: .5em;
-  text-shadow: 0 0 16px rgba(0,240,65,.3);
-}
-.sim-layer-4 .section-title {
-  color: #00ee40;
-  text-shadow: 0 0 30px rgba(0,235,65,.4), 0 0 90px rgba(0,235,65,.15);
-}
-.sim-layer-4 .section-body { color: rgba(0,195,52,.76); }
-
-/* Terminal step blocks */
+.sim-layer-4::after  { background: linear-gradient(to top, #000 0%, transparent 100%); }
+.sim-layer-4 .sim-eyebrow { color: rgba(0,240,65,.65); letter-spacing: .5em; text-shadow: 0 0 16px rgba(0,240,65,.3); }
+.sim-layer-4 .section-title { color: #00ee40; text-shadow: 0 0 30px rgba(0,235,65,.4),0 0 90px rgba(0,235,65,.15); }
+.sim-layer-4 .section-body  { color: rgba(0,195,52,.76); }
 .steps-code { max-width: 620px; margin: 48px auto 0; text-align: left; }
 .step-code {
   background: rgba(0,22,7,.75); padding: 22px 24px; border-radius: 3px;
   border: 1px solid rgba(0,195,55,.2); margin-bottom: 14px;
-  display: flex; gap: 20px; align-items: flex-start;
-  backdrop-filter: blur(6px);
+  display: flex; gap: 20px; align-items: flex-start; backdrop-filter: blur(6px);
 }
-.step-code .step-title {
-  color: #00ee40; font-family: 'Cinzel', serif;
-  font-size: 10px; letter-spacing: .22em; text-transform: uppercase; margin-bottom: 6px;
-}
-.step-code .step-body { color: rgba(0,195,52,.8); font-size: 16px; line-height: 1.65; }
+.step-code .step-title { color: #00ee40; font-family: 'Cinzel',serif; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; margin-bottom: 6px; }
+.step-code .step-body  { color: rgba(0,195,52,.8); font-size: 16px; line-height: 1.65; }
 .code-num {
   flex-shrink: 0; min-width: 40px; height: 40px; margin-top: 2px;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(0,22,7,.9) !important; border-radius: 3px !important;
-  border: 1px solid rgba(0,195,55,.32) !important;
-  color: #00ee40 !important; font-family: 'Courier New', monospace !important;
-  font-size: 13px; box-shadow: 0 0 12px rgba(0,235,65,.15), inset 0 0 6px rgba(0,235,65,.06);
+  background: rgba(0,22,7,.9)!important; border-radius: 3px!important;
+  border: 1px solid rgba(0,195,55,.32)!important;
+  color: #00ee40!important; font-family: 'Courier New',monospace!important;
+  font-size: 13px; box-shadow: 0 0 12px rgba(0,235,65,.15),inset 0 0 6px rgba(0,235,65,.06);
 }
 .code-quote {
-  border-color: rgba(0,195,55,.25) !important;
-  background: rgba(0,16,5,.7) !important;
-  max-width: 620px; margin: 44px auto !important;
-  backdrop-filter: blur(6px);
+  border-color: rgba(0,195,55,.25)!important; background: rgba(0,16,5,.7)!important;
+  max-width: 620px; margin: 44px auto!important; backdrop-filter: blur(6px);
 }
-.code-quote .quote-text { color: rgba(0,220,62,.86) !important; }
-.code-quote .quote-attr { color: rgba(0,150,40,.68) !important; }
+.code-quote .quote-text { color: rgba(0,220,62,.86)!important; }
+.code-quote .quote-attr { color: rgba(0,150,40,.68)!important; }
+
+/* ══════════════════════════════════════════════════════════
+   ADMIN SYSTEM — SSC Blog CMS
+══════════════════════════════════════════════════════════ */
+
+/* Admin trigger — invisible 5×5 in footer */
+#admin-trigger {
+  position: fixed; bottom: 18px; right: 18px;
+  width: 12px; height: 12px;
+  background: transparent; border: none;
+  cursor: default; z-index: 9000; opacity: 0;
+}
+
+/* Full-screen admin overlay */
+#admin-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(3,2,8,0.97);
+  backdrop-filter: blur(12px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#admin-overlay.open { display: flex; flex-direction: column; }
+
+/* ── Login panel ── */
+#admin-login {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 100vh; padding: 40px 24px; gap: 0;
+}
+.admin-login-sigil {
+  font-size: 48px; margin-bottom: 24px;
+  color: var(--gold); opacity: 0.6;
+  animation: adminPulse 3s ease-in-out infinite;
+}
+@keyframes adminPulse {
+  0%,100% { opacity: 0.4; transform: scale(1); }
+  50%      { opacity: 0.8; transform: scale(1.05); }
+}
+.admin-login-title {
+  font-family: 'Cinzel', serif; font-size: 11px;
+  letter-spacing: .5em; color: var(--gold-dim);
+  text-transform: uppercase; margin-bottom: 32px;
+}
+.admin-login-field {
+  position: relative; width: 100%; max-width: 320px; margin-bottom: 16px;
+}
+.admin-login-field input {
+  width: 100%;
+  background: rgba(201,168,76,0.05);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 3px;
+  color: var(--text);
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  letter-spacing: .15em;
+  padding: 14px 18px;
+  outline: none;
+  text-align: center;
+  transition: border-color .3s;
+}
+.admin-login-field input:focus { border-color: rgba(201,168,76,0.5); }
+.admin-login-field input::placeholder { color: var(--text-muted); letter-spacing: .1em; }
+.admin-login-btn {
+  width: 100%; max-width: 320px;
+  padding: 14px; margin-top: 8px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(123,79,166,0.1));
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 3px;
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-size: 11px; letter-spacing: .3em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .3s, border-color .3s;
+}
+.admin-login-btn:hover {
+  background: linear-gradient(135deg, rgba(201,168,76,0.25), rgba(123,79,166,0.18));
+  border-color: rgba(201,168,76,0.5);
+}
+.admin-login-error {
+  color: var(--rose-light); font-size: 12px;
+  font-family: 'Cinzel', serif; letter-spacing: .1em;
+  margin-top: 12px; min-height: 18px;
+  text-align: center;
+}
+
+/* ── Main admin panel ── */
+#admin-panel { display: none; flex-direction: column; min-height: 100vh; }
+#admin-panel.open { display: flex; }
+
+.admin-bar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 28px;
+  background: rgba(6,4,14,0.95);
+  border-bottom: 1px solid rgba(201,168,76,0.12);
+  backdrop-filter: blur(8px);
+}
+.admin-bar-title {
+  font-family: 'Cinzel', serif; font-size: 9px;
+  letter-spacing: .45em; color: var(--gold-dim);
+  text-transform: uppercase;
+}
+.admin-bar-actions { display: flex; gap: 10px; }
+.admin-tab-btn {
+  padding: 7px 16px;
+  background: transparent;
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 3px;
+  color: var(--text-dim);
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: .2em;
+  text-transform: uppercase; cursor: pointer;
+  transition: all .25s;
+}
+.admin-tab-btn.active, .admin-tab-btn:hover {
+  background: rgba(201,168,76,0.1);
+  border-color: rgba(201,168,76,0.35);
+  color: var(--gold);
+}
+.admin-close-btn {
+  padding: 7px 14px;
+  background: rgba(160,64,112,0.12);
+  border: 1px solid rgba(160,64,112,0.25);
+  border-radius: 3px;
+  color: var(--rose-light); font-family: 'Cinzel', serif;
+  font-size: 9px; letter-spacing: .2em; cursor: pointer;
+  transition: all .25s;
+}
+.admin-close-btn:hover { background: rgba(160,64,112,0.22); }
+
+/* ── Tabs ── */
+.admin-tab { display: none; flex: 1; }
+.admin-tab.active { display: block; }
+
+/* ── Editor tab ── */
+.admin-editor { max-width: 820px; margin: 0 auto; padding: 40px 28px; }
+.admin-section-label {
+  font-family: 'Cinzel', serif; font-size: 8px;
+  letter-spacing: .4em; color: var(--gold-dim);
+  text-transform: uppercase; margin-bottom: 10px; margin-top: 28px;
+}
+.admin-section-label:first-child { margin-top: 0; }
+
+.admin-field { margin-bottom: 20px; }
+.admin-field label {
+  display: block; font-family: 'Cinzel', serif;
+  font-size: 9px; letter-spacing: .25em; color: var(--text-muted);
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.admin-field input,
+.admin-field select,
+.admin-field textarea {
+  width: 100%;
+  background: rgba(201,168,76,0.04);
+  border: 1px solid rgba(201,168,76,0.14);
+  border-radius: 3px; color: var(--text);
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 16px; padding: 12px 16px; outline: none;
+  transition: border-color .25s;
+  resize: vertical;
+}
+.admin-field input:focus,
+.admin-field select:focus,
+.admin-field textarea:focus { border-color: rgba(201,168,76,0.4); }
+.admin-field select { appearance: none; cursor: pointer; }
+.admin-field textarea { min-height: 120px; line-height: 1.7; }
+#admin-body { min-height: 280px; font-family: 'EB Garamond', Georgia, serif; }
+
+.admin-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 580px) { .admin-row { grid-template-columns: 1fr; } }
+
+/* formatting toolbar */
+.editor-toolbar {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin-bottom: 8px; padding: 8px 0;
+  border-bottom: 1px solid rgba(201,168,76,0.1);
+}
+.toolbar-btn {
+  padding: 4px 10px; font-size: 12px;
+  background: rgba(201,168,76,0.06);
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 2px; color: var(--text-dim);
+  font-family: 'Cinzel', serif; letter-spacing: .05em;
+  cursor: pointer; transition: all .2s;
+}
+.toolbar-btn:hover { background: rgba(201,168,76,0.14); color: var(--gold); }
+
+/* action buttons */
+.admin-actions {
+  display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap;
+}
+.admin-btn-primary {
+  padding: 13px 28px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.2), rgba(123,79,166,0.12));
+  border: 1px solid rgba(201,168,76,0.4);
+  border-radius: 3px; color: var(--gold);
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: .25em;
+  text-transform: uppercase; cursor: pointer; transition: all .25s;
+}
+.admin-btn-primary:hover { background: linear-gradient(135deg, rgba(201,168,76,0.3), rgba(123,79,166,0.2)); }
+.admin-btn-secondary {
+  padding: 13px 24px;
+  background: transparent;
+  border: 1px solid rgba(201,168,76,0.18);
+  border-radius: 3px; color: var(--text-dim);
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: .2em;
+  text-transform: uppercase; cursor: pointer; transition: all .25s;
+}
+.admin-btn-secondary:hover { border-color: rgba(201,168,76,0.35); color: var(--text); }
+
+/* ── Preview panel ── */
+#admin-preview-content {
+  max-width: 740px; margin: 0 auto; padding: 48px 28px;
+}
+.preview-banner {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(22px,4vw,38px); color: var(--gold);
+  margin-bottom: 12px; line-height: 1.25;
+}
+.preview-meta {
+  display: flex; gap: 14px; align-items: center;
+  margin-bottom: 32px; flex-wrap: wrap;
+}
+.preview-body {
+  font-size: 17px; line-height: 1.85; color: var(--text);
+}
+.preview-body h3 {
+  font-family: 'Cinzel', serif; font-size: 13px;
+  letter-spacing: .2em; color: var(--gold-light);
+  text-transform: uppercase; margin: 28px 0 12px;
+}
+.preview-body p { margin-bottom: 18px; }
+.preview-body blockquote {
+  border-left: 2px solid var(--gold-dim);
+  padding: 12px 20px; margin: 24px 0;
+  color: var(--text-dim); font-style: italic;
+}
+
+/* ── Posts list tab ── */
+.admin-posts-list { max-width: 820px; margin: 0 auto; padding: 40px 28px; }
+.admin-post-item {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; padding: 18px 0;
+  border-bottom: 1px solid rgba(201,168,76,0.08);
+}
+.admin-post-item:last-child { border-bottom: none; }
+.admin-post-info { flex: 1; }
+.admin-post-title {
+  font-family: 'Cinzel', serif; font-size: 13px;
+  color: var(--text); margin-bottom: 4px;
+}
+.admin-post-meta { font-size: 12px; color: var(--text-muted); }
+.admin-post-btns { display: flex; gap: 8px; flex-shrink: 0; }
+.admin-post-edit {
+  padding: 6px 14px; font-size: 10px;
+  background: rgba(201,168,76,0.08);
+  border: 1px solid rgba(201,168,76,0.18);
+  border-radius: 2px; color: var(--gold-dim);
+  font-family: 'Cinzel', serif; letter-spacing: .1em;
+  cursor: pointer; transition: all .2s;
+}
+.admin-post-edit:hover { color: var(--gold); border-color: rgba(201,168,76,0.4); }
+.admin-post-delete {
+  padding: 6px 14px; font-size: 10px;
+  background: rgba(160,64,112,0.08);
+  border: 1px solid rgba(160,64,112,0.18);
+  border-radius: 2px; color: var(--rose-light);
+  font-family: 'Cinzel', serif; letter-spacing: .1em;
+  cursor: pointer; transition: all .2s; opacity: 0.6;
+}
+.admin-post-delete:hover { opacity: 1; }
+
+.admin-empty {
+  text-align: center; padding: 60px 24px;
+  color: var(--text-muted); font-style: italic; font-size: 15px;
+}
+
+/* Toast notification */
+#admin-toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: rgba(10,8,20,0.95); border: 1px solid rgba(201,168,76,0.3);
+  color: var(--gold); padding: 12px 24px; border-radius: 4px;
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: .2em;
+  z-index: 99999; opacity: 0;
+  transition: opacity .4s ease, transform .4s ease;
+  pointer-events: none; white-space: nowrap;
+}
+#admin-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 </style>
 </head>
 <body>
-<!-- ════ NAVIGATION ════ -->
 <nav>
   <div class="nav-logo" onclick="showPage('home')">
     <div class="nav-logo-sigil">
-      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="32" cy="32" r="30" stroke="#c9a84c" stroke-width="0.5" stroke-dasharray="4 3"/>
-        <circle cx="32" cy="32" r="20" stroke="#c9a84c" stroke-width="0.5"/>
-        <polygon points="32,4 60,50 4,50" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.6"/>
-        <polygon points="32,60 4,14 60,14" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.6"/>
-        <circle cx="32" cy="32" r="4" fill="#c9a84c" opacity="0.8"/>
-        <circle cx="32" cy="32" r="2" fill="#e8c96b"/>
-      </svg>
+      <svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" stroke="#c9a84c" stroke-width="0.5" stroke-dasharray="4 3"/><circle cx="32" cy="32" r="20" stroke="#c9a84c" stroke-width="0.5"/><polygon points="32,4 60,50 4,50" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.6"/><polygon points="32,60 4,14 60,14" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.6"/><circle cx="32" cy="32" r="4" fill="#c9a84c" opacity="0.8"/><circle cx="32" cy="32" r="2" fill="#e8c96b"/></svg>
     </div>
     <div class="nav-logo-text">&#10022; &nbsp;Simulation Source Code</div>
   </div>
@@ -940,9 +1313,7 @@ footer {
     <button class="nav-link"        id="nav-privacy"    onclick="showPage('privacy')">Privacy</button>
   </div>
   <a href="#" class="nav-cta" onclick="alert('Coming soon!');return false;">&#11041;&nbsp;Download App</a>
-  <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
+  <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
 </nav>
 <div class="nav-mobile" id="mobile-menu">
   <button class="nav-link" onclick="showPage('home');toggleMenu()">Home</button>
@@ -954,25 +1325,16 @@ footer {
   <a href="#" class="nav-cta" onclick="alert('Coming soon!');return false;">&#11041;&nbsp;Download App</a>
 </div>
 
-<!-- ════ HOME PAGE ════ -->
 <div class="page active" id="page-home">
 
-<!-- LAYER 1 — Surface Reality (hero, unchanged) -->
-<section class="hero sim-layer-1" id="sim-layer-1">
+<section class="hero sim-layer-1">
   <div class="hero-sigil a0">
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="32" cy="32" r="30" stroke="#c9a84c" stroke-width="0.5" stroke-dasharray="4 3"/>
-      <circle cx="32" cy="32" r="20" stroke="#c9a84c" stroke-width="0.5"/>
-      <polygon points="32,4 60,50 4,50" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.6"/>
-      <polygon points="32,60 4,14 60,14" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.6"/>
-      <circle cx="32" cy="32" r="4" fill="#c9a84c" opacity="0.8"/>
-      <circle cx="32" cy="32" r="2" fill="#e8c96b"/>
-    </svg>
+    <svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" stroke="#c9a84c" stroke-width="0.5" stroke-dasharray="4 3"/><circle cx="32" cy="32" r="20" stroke="#c9a84c" stroke-width="0.5"/><polygon points="32,4 60,50 4,50" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.6"/><polygon points="32,60 4,14 60,14" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.6"/><circle cx="32" cy="32" r="4" fill="#c9a84c" opacity="0.8"/><circle cx="32" cy="32" r="2" fill="#e8c96b"/></svg>
   </div>
-  <div class="hero-eyebrow a1">|</div>
-  <h1 class="hero-title a1">Simulation Source Code</h1>
+  <div class="hero-eyebrow a1">Simulation Source Code</div>
+  <h1 class="hero-title a1">Numerology</h1>
   <div class="hero-subtitle a2">Decode the Architecture of Your Life</div>
-  <p class="hero-body a2">Seven frequencies encoded in your birth and name — the complete blueprint of your simulation, waiting to be read.</p>
+  <p class="hero-body a2">Seven frequencies encoded in your birth and name &#8212; the complete blueprint of your simulation, waiting to be read.</p>
   <div class="hero-actions a3">
     <button class="btn-primary" onclick="showPage('calculator')">&#11041;&nbsp;Begin Your Reading</button>
     <button class="btn-secondary" onclick="showPage('about')">Learn More</button>
@@ -980,69 +1342,48 @@ footer {
   <div class="scroll-indicator">Descend</div>
 </section>
 
-<!-- LAYER 2 — Physical Substrate -->
 <section class="sim-layer sim-layer-2">
   <canvas class="layer-canvas" id="canvas-solid"></canvas>
-  <div class="layer-label">
-    <span class="layer-depth">LAYER 02</span>
-    <span class="layer-name">Physical Substrate</span>
-  </div>
+  <div class="layer-label"><span class="layer-depth">LAYER 02</span><span class="layer-name">Physical Substrate</span></div>
   <div class="sim-content">
-    <div class="section-eyebrow sim-eyebrow">A New system</div>
+    <div class="section-eyebrow sim-eyebrow">What Is This</div>
     <h2 class="section-title">Numerology as Source Code</h2>
-    <p class="section-body">&nbsp;Your name and birth date are not coincidences — they are encoded data, parameters set at the moment your simulation began. Numerology is the practice of reading that code.</p>
-    <p class="section-body" style="margin-top:16px">Simulation Source Code goes deeper than traditional numerology, revealing seven distinct frequencies that together form the complete architecture of your experience — your drives, your gifts, your lessons, your destiny.</p>
+    <p class="section-body">The universe runs on mathematics. Your name and birth date are not coincidences &#8212; they are encoded data, parameters set at the moment your simulation began. Numerology is the practice of reading that code.</p>
+    <p class="section-body" style="margin-top:16px">Simulation Source Code goes deeper than traditional numerology, revealing seven distinct frequencies that together form the complete architecture of your experience.</p>
   </div>
 </section>
 
-<!-- LAYER 3 — Holographic Field -->
 <section class="sim-layer sim-layer-3">
   <canvas class="layer-canvas" id="canvas-holo"></canvas>
-  <div class="layer-label">
-    <span class="layer-depth">LAYER 03</span>
-    <span class="layer-name">Holographic Field</span>
-  </div>
+  <div class="layer-label"><span class="layer-depth">LAYER 03</span><span class="layer-name">Holographic Field</span></div>
   <div class="sim-content">
     <div class="section-eyebrow sim-eyebrow">The Seven Frequencies</div>
     <h2 class="section-title">Your Complete Reading</h2>
     <div class="freq-grid">
-      <div class="freq-card holo-card"><div class="freq-number">01</div><div class="freq-name">Life Path</div><p class="freq-desc">The primary frequency of your journey — the core theme and direction your life is oriented toward.</p></div>
-      <div class="freq-card holo-card"><div class="freq-number">02</div><div class="freq-name">Expression</div><p class="freq-desc">How your energies naturally express in the world — your innate talents and the way others experience you.</p></div>
-      <div class="freq-card holo-card"><div class="freq-number">03</div><div class="freq-name">Life Calling</div><p class="freq-desc">Your unique mission — combining your Life Path and Expression into a single directive frequency.</p></div>
-      <div class="freq-card holo-card"><div class="freq-number">04</div><div class="freq-name">Soul</div><p class="freq-desc">Your inner world — the private desires, values, and yearnings that motivate everything you do.</p></div>
-      <div class="freq-card holo-card"><div class="freq-number">05</div><div class="freq-name">Outer</div><p class="freq-desc">The face you show the world — your personality, how you are perceived, and your social signature.</p></div>
-      <div class="freq-card holo-card"><div class="freq-number">06</div><div class="freq-name">Achievement</div><p class="freq-desc">Your approach to goals — how you naturally achieve things. Derived from your birth month and day.</p></div>
-      <div class="freq-card holo-card"><div class="freq-number">07</div><div class="freq-name">Theme</div><p class="freq-desc">The recurring pattern woven through your life — the lesson that keeps returning until integrated.</p></div>
+      <div class="freq-card holo-card"><div class="freq-number">01</div><div class="freq-name">Life Path</div><p class="freq-desc">The primary frequency of your journey &#8212; the core theme and direction your life is oriented toward.</p></div>
+      <div class="freq-card holo-card"><div class="freq-number">02</div><div class="freq-name">Expression</div><p class="freq-desc">How your energies naturally express in the world &#8212; your innate talents and the way others experience you.</p></div>
+      <div class="freq-card holo-card"><div class="freq-number">03</div><div class="freq-name">Life Calling</div><p class="freq-desc">Your unique mission &#8212; combining your Life Path and Expression into a single directive frequency.</p></div>
+      <div class="freq-card holo-card"><div class="freq-number">04</div><div class="freq-name">Soul</div><p class="freq-desc">Your inner world &#8212; the private desires, values, and yearnings that motivate everything you do.</p></div>
+      <div class="freq-card holo-card"><div class="freq-number">05</div><div class="freq-name">Outer</div><p class="freq-desc">The face you show the world &#8212; your personality, how you are perceived, and your social signature.</p></div>
+      <div class="freq-card holo-card"><div class="freq-number">06</div><div class="freq-name">Achievement</div><p class="freq-desc">Your approach to goals &#8212; how you naturally achieve things. Derived from your birth month and day.</p></div>
+      <div class="freq-card holo-card"><div class="freq-number">07</div><div class="freq-name">Theme</div><p class="freq-desc">The recurring pattern woven through your life &#8212; the lesson that keeps returning until integrated.</p></div>
     </div>
   </div>
 </section>
 
-<!-- LAYER 4 — Source Code -->
 <section class="sim-layer sim-layer-4">
   <canvas class="layer-canvas" id="canvas-matrix"></canvas>
-  <div class="layer-label">
-    <span class="layer-depth">LAYER 04</span>
-    <span class="layer-name">Source Code</span>
-  </div>
+  <div class="layer-label"><span class="layer-depth">LAYER 04</span><span class="layer-name">Source Code</span></div>
   <div class="sim-content">
     <div class="section-eyebrow sim-eyebrow">How It Works</div>
     <h2 class="section-title">Three Steps to Your Reading</h2>
     <div class="steps steps-code">
-      <div class="step-code">
-        <div class="code-num">I</div>
-        <div><div class="step-title">Enter Your Details</div><p class="step-body">Provide your full birth name and date of birth. Use the name on your birth certificate.</p></div>
-      </div>
-      <div class="step-code">
-        <div class="code-num">II</div>
-        <div><div class="step-title">Calculate Your Frequencies</div><p class="step-body">Our system applies Pythagorean numerology principles to derive each of your seven core numbers.</p></div>
-      </div>
-      <div class="step-code">
-        <div class="code-num">III</div>
-        <div><div class="step-title">Receive Your Interpretation</div><p class="step-body">Each number is decoded with rich layered interpretations — themes, archetypes, strengths, and shadows.</p></div>
-      </div>
+      <div class="step-code"><div class="code-num">I</div><div><div class="step-title">Enter Your Details</div><p class="step-body">Provide your full birth name and date of birth. Use the name on your birth certificate.</p></div></div>
+      <div class="step-code"><div class="code-num">II</div><div><div class="step-title">Calculate Your Frequencies</div><p class="step-body">Our system applies Pythagorean numerology principles to derive each of your seven core numbers.</p></div></div>
+      <div class="step-code"><div class="code-num">III</div><div><div class="step-title">Receive Your Interpretation</div><p class="step-body">Each number is decoded with rich layered interpretations &#8212; themes, archetypes, strengths, and shadows.</p></div></div>
     </div>
     <div class="quote-block code-quote">
-      <p class="quote-text">"Numbers are the language in which the universe was written."</p>
+      <p class="quote-text">&#8220;Numbers are the language in which the universe was written.&#8221;</p>
       <div class="quote-attr">&#8212; Galileo Galilei</div>
     </div>
     <div style="margin-top:48px">
@@ -1064,20 +1405,18 @@ footer {
 
 </div><!-- /page-home -->
 
-<!-- ════ CALCULATOR PAGE ════ -->
 <div class="page" id="page-calculator">
   <div class="calc-page-hero a0">
     <div class="calc-page-eyebrow">Simulation Source Code</div>
-    <h1 class="calc-page-title">Numerology Decoder</h1>
+    <h1 class="calc-page-title">Numerology Calculator</h1>
     <p class="calc-page-sub">Enter your birth details to reveal your seven encoded frequencies.</p>
   </div>
   <div class="calc-container">
     <div class="form-card a1">
-      <div class="form-section-label">&#xB7; Birth Date &#xB7;</div>
+      <div class="form-section-label">&middot; Birth Date &middot;</div>
       <div class="date-row">
         <div class="field"><label>Month</label>
-          <select id="calc-month">
-            <option value="">&#8212;</option>
+          <select id="calc-month"><option value="">&#8212;</option>
             <option value="1">January</option><option value="2">February</option><option value="3">March</option>
             <option value="4">April</option><option value="5">May</option><option value="6">June</option>
             <option value="7">July</option><option value="8">August</option><option value="9">September</option>
@@ -1087,7 +1426,7 @@ footer {
         <div class="field"><label>Day</label><input type="number" id="calc-day" placeholder="DD" min="1" max="31"></div>
         <div class="field"><label>Year</label><input type="number" id="calc-year" placeholder="YYYY" min="1900" max="2099"></div>
       </div>
-      <div class="form-section-label" style="margin-top:28px">&#xB7; Full Birth Name &#xB7;</div>
+      <div class="form-section-label" style="margin-top:28px">&middot; Full Birth Name &middot;</div>
       <div class="field"><label>First Name</label><input type="text" id="calc-first" placeholder="As on birth certificate"></div>
       <div class="field" style="margin-top:14px"><label>Middle Name (if any)</label><input type="text" id="calc-middle" placeholder="Optional"></div>
       <div class="field" style="margin-top:14px"><label>Last Name</label><input type="text" id="calc-last" placeholder="Surname"></div>
@@ -1098,9 +1437,8 @@ footer {
       <div class="results-placeholder-text">Your reading will appear here</div>
     </div>
   </div>
-</div><!-- /page-calculator -->
+</div>
 
-<!-- ════ BOOKS PAGE ════ -->
 <div class="page" id="page-books">
   <div class="books-hero a0">
     <div class="section-eyebrow">Knowledge &amp; Study</div>
@@ -1108,25 +1446,25 @@ footer {
     <p class="section-body" style="max-width:520px;margin:0 auto;font-style:italic;color:var(--text-dim)">A curated library to deepen your understanding of numerology, sacred mathematics, and the language of the universe.</p>
   </div>
   <div class="books-container">
-    <div class="books-section-title a1">&#xB7; Numerology Essentials &#xB7;</div>
+    <div class="books-section-title a1">&middot; Numerology Essentials &middot;</div>
     <div class="book-grid a1">
-      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#128214;</div></div><div class="book-info"><div class="book-tag">Foundational</div><div class="book-title">Numerology and the Divine Triangle</div><div class="book-author">Faith Javane &amp; Dusty Bunker</div><p class="book-desc">A comprehensive introduction to the Pythagorean system, connecting numerology with Tarot and astrology into a unified framework.</p><a href="https://amzn.to/4svrcHI" class="book-btn">View Book &#8594;</a></div></div>
-      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#128290;</div></div><div class="book-info"><div class="book-tag">Classical</div><div class="book-title">The Complete Book of Numerology</div><div class="book-author">David A. Phillips</div><p class="book-desc">An in-depth exploration of how numbers shape personality and destiny, written by one of numerology's most respected modern voices.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
-      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#10024;</div></div><div class="book-info"><div class="book-tag">Practical</div><div class="book-title">Numerology: Key To Your Inner Self</div><div class="book-author">Hans Decoz</div><p class="book-desc">A detailed, practical guide to calculating and interpreting all core numbers, with emphasis on personal and professional application.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
+      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#128214;</div></div><div class="book-info"><div class="book-tag">Foundational</div><div class="book-title">Numerology and the Divine Triangle</div><div class="book-author">Faith Javane &amp; Dusty Bunker</div><p class="book-desc">A comprehensive introduction to the Pythagorean system, connecting numerology with Tarot and astrology.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
+      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#128290;</div></div><div class="book-info"><div class="book-tag">Classical</div><div class="book-title">The Complete Book of Numerology</div><div class="book-author">David A. Phillips</div><p class="book-desc">An in-depth exploration of how numbers shape personality and destiny.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
+      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#10024;</div></div><div class="book-info"><div class="book-tag">Practical</div><div class="book-title">Numerology: Key To Your Inner Self</div><div class="book-author">Hans Decoz</div><p class="book-desc">A detailed, practical guide to calculating and interpreting all core numbers.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
     </div>
-    <div class="books-section-title a2">&#xB7; Sacred Mathematics &#xB7;</div>
+    <div class="books-section-title a2">&middot; Sacred Mathematics &middot;</div>
     <div class="book-grid a2">
       <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#11041;</div></div><div class="book-info"><div class="book-tag">Sacred Geometry</div><div class="book-title">A Beginner's Guide to Constructing the Universe</div><div class="book-author">Michael S. Schneider</div><p class="book-desc">How mathematics and geometry underlie the patterns of nature and consciousness.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
-      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#127756;</div></div><div class="book-info"><div class="book-tag">Philosophy</div><div class="book-title">The Secret Teachings of All Ages</div><div class="book-author">Manly P. Hall</div><p class="book-desc">A monumental encyclopedic work on esoteric philosophy, including Pythagorean number mysticism and its roots in ancient wisdom traditions.</p><a href="https://amzn.to/40T8kq0" class="book-btn">View Book &#8594;</a></div></div>
-      <div class="book-card"></div>
+      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#127756;</div></div><div class="book-info"><div class="book-tag">Philosophy</div><div class="book-title">The Secret Teachings of All Ages</div><div class="book-author">Manly P. Hall</div><p class="book-desc">A monumental encyclopedic work on esoteric philosophy and Pythagorean number mysticism.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
+      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#128303;</div></div><div class="book-info"><div class="book-tag">Advanced</div><div class="book-title">The Power of Vedic Mathematics</div><div class="book-author">Atul Gupta</div><p class="book-desc">Ancient Indian mathematical traditions revealing elegant numerical structures.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
     </div>
-    <div class="books-section-title a3">&#xB7; Consciousness &amp; Simulation Theory &#xB7;</div>
+    <div class="books-section-title a3">&middot; Consciousness &amp; Simulation Theory &middot;</div>
     <div class="book-grid a3">
-      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#128306;</div></div><div class="book-info"><div class="book-tag">Consciousness</div><div class="book-title">The Holographic Universe</div><div class="book-author">Michael Talbot</div><p class="book-desc">A groundbreaking work suggesting that the universe itself may be a kind of hologram and what that means for the nature of reality.</p><a href="https://amzn.to/4ufbyle" class="book-btn">View Book &#8594;</a></div></div>
-      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#8734;</div></div><div class="book-info"><div class="book-tag">Theory</div><div class="book-title">Are You Living in a Computer Simulation?</div><div class="book-author">Nick Bostrom</div><p class="book-desc">The philosophical paper that sparked modern simulation theory — a rigorous argument for why our reality may be computational in nature.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
+      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#128306;</div></div><div class="book-info"><div class="book-tag">Consciousness</div><div class="book-title">The Holographic Universe</div><div class="book-author">Michael Talbot</div><p class="book-desc">A groundbreaking work suggesting the universe may be a kind of hologram.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
+      <div class="book-card"><div class="book-cover"><div class="book-cover-sigil">&#8734;</div></div><div class="book-info"><div class="book-tag">Theory</div><div class="book-title">Are You Living in a Computer Simulation?</div><div class="book-author">Nick Bostrom</div><p class="book-desc">The philosophical paper that sparked modern simulation theory.</p><a href="#" class="book-btn">View Book &#8594;</a></div></div>
     </div>
   </div>
-</div><!-- /page-books -->
+</div>
 <!-- ═══════════════════════════════════════
      BLOG PAGE
 ═══════════════════════════════════════ -->
@@ -1432,7 +1770,6 @@ footer {
 
 </div>
 
-<!-- ════ ABOUT PAGE ════ -->
 <div class="page" id="page-about">
   <div class="about-hero a0">
     <div class="about-avatar">&#10022;</div>
@@ -1442,24 +1779,24 @@ footer {
   </div>
   <div class="about-container">
     <div class="about-section a1">
-      <div class="about-section-title">&#xB7; The Philosophy &#xB7;</div>
+      <div class="about-section-title">&middot; The Philosophy &middot;</div>
       <p>Simulation Source Code began with a simple question: what if numerology is not mysticism &#8212; what if it is mathematics? Modern physics increasingly suggests that reality is information at its most fundamental level. If this is true, the numerical patterns in your name and birth date are not random &#8212; they are parameters set at the moment your simulation was initialised.</p>
     </div>
     <div class="about-section a2">
-      <div class="about-section-title">&#xB7; Our Approach &#xB7;</div>
-      <p>We use the Pythagorean system as our foundation, while drawing on deeper esoteric traditions to enrich interpretation. Every reading delivers seven core frequencies, each calculated precisely from your birth data and name. Interpretations are honest, nuanced, and useful &#8212; each frequency contains light and shadow, gift and challenge.</p>
+      <div class="about-section-title">&middot; Our Approach &middot;</div>
+      <p>We use the Pythagorean system as our foundation, while drawing on deeper esoteric traditions to enrich interpretation. Every reading delivers seven core frequencies, each calculated precisely from your birth data and name.</p>
     </div>
     <div class="about-section a3">
-      <div class="about-section-title">&#xB7; Our Pillars &#xB7;</div>
+      <div class="about-section-title">&middot; Our Pillars &middot;</div>
       <div class="pillars">
-        <div class="pillar"><span class="pillar-icon">&#128290;</span><div class="pillar-title">Mathematical Precision</div><p class="pillar-text">Every number is calculated using rigorous, consistent methodology drawn from classical sources.</p></div>
-        <div class="pillar"><span class="pillar-icon">&#128214;</span><div class="pillar-title">Deep Interpretation</div><p class="pillar-text">Readings go beyond surface descriptions into archetypes, patterns, and the deeper meanings each number carries.</p></div>
-        <div class="pillar"><span class="pillar-icon">&#127756;</span><div class="pillar-title">Open Framework</div><p class="pillar-text">We approach numerology as a framework for self-understanding, not fixed fate. You are always the author.</p></div>
-        <div class="pillar"><span class="pillar-icon">&#10022;</span><div class="pillar-title">Continuing Study</div><p class="pillar-text">Our interpretations are continuously refined through research, study, and engagement with traditions worldwide.</p></div>
+        <div class="pillar"><span class="pillar-icon">&#128290;</span><div class="pillar-title">Mathematical Precision</div><p class="pillar-text">Every number is calculated using rigorous, consistent methodology.</p></div>
+        <div class="pillar"><span class="pillar-icon">&#128214;</span><div class="pillar-title">Deep Interpretation</div><p class="pillar-text">Readings go beyond surface descriptions into archetypes and deeper meanings.</p></div>
+        <div class="pillar"><span class="pillar-icon">&#127756;</span><div class="pillar-title">Open Framework</div><p class="pillar-text">Numerology as a tool for self-understanding, not fixed fate.</p></div>
+        <div class="pillar"><span class="pillar-icon">&#10022;</span><div class="pillar-title">Continuing Study</div><p class="pillar-text">Interpretations continuously refined through research and engagement with traditions worldwide.</p></div>
       </div>
     </div>
     <div class="about-section a4">
-      <div class="about-section-title">&#xB7; Connect &#xB7;</div>
+      <div class="about-section-title">&middot; Connect &middot;</div>
       <div class="social-row" style="margin-top:24px">
         <a href="https://www.instagram.com/simulationsourcecode" target="_blank" class="social-btn">&#128247;</a>
         <a href="https://www.youtube.com/@kytholek" target="_blank" class="social-btn">&#9654;&#65039;</a>
@@ -1467,27 +1804,21 @@ footer {
       </div>
     </div>
   </div>
-</div><!-- /page-about -->
+</div>
 
-<!-- ════ PRIVACY PAGE ════ -->
 <div class="page" id="page-privacy">
   <div class="privacy-hero a0"><div class="section-eyebrow">Legal</div><h1 class="section-title">Privacy Policy</h1></div>
   <div class="privacy-container">
-    <div class="privacy-updated a1">Last updated: March 6, 2026</div>
+    <div class="privacy-updated a1">Last updated: January 2025</div>
     <div class="privacy-highlight a1"><p><strong style="color:var(--gold-light);font-family:'Cinzel',serif;font-size:12px;letter-spacing:.1em">In plain language:</strong> We collect minimal data, we do not sell your information, and everything you enter into the calculator stays on your device.</p></div>
-    <div class="privacy-section a2"><div class="privacy-section-title"><span class="ps-num">1</span> Who We Are</div><p>Simulation Source Code ("SSC") operates the SSC Numerology application and associated website. Contact: <span style="color:var(--gold-dim)">kytholek@gmail.com</span></p></div>
-    <div class="privacy-section a2"><div class="privacy-section-title"><span class="ps-num">2</span> Information We Collect</div><p>We collect only what is necessary: calculator inputs (processed locally, never transmitted), anonymised usage analytics, crash reports (device type/OS only), and email address only if voluntarily provided.</p></div>
-    <div class="privacy-section a2"><div class="privacy-section-title"><span class="ps-num">3</span> How We Use Your Information</div><p>Information is used solely to provide and improve the service, send communications if you have an account, and comply with legal obligations. We do not use your data for advertising and do not sell or trade it.</p></div>
-    <div class="privacy-section a3"><div class="privacy-section-title"><span class="ps-num">4</span> Data Storage &amp; Security</div><div class="privacy-highlight"><p>Your birth name and birth date are never stored on SSC servers. All numerological calculations are performed on-device.</p></div></div>
-    <div class="privacy-section a3"><div class="privacy-section-title"><span class="ps-num">5</span> Third-Party Services</div><p>We use Apple App Store / Google Play for distribution and privacy-focused aggregated analytics. We do not integrate advertising networks or tracking pixels.</p></div>
-    <div class="privacy-section a3"><div class="privacy-section-title"><span class="ps-num">6</span> Your Rights</div><p>You may have rights to access, correct, delete, or port your data. Contact <span style="color:var(--gold-dim)">privacy@simulationsourcecode.com</span> &#8212; we respond within 30 days.</p></div>
-    <div class="privacy-section a4"><div class="privacy-section-title"><span class="ps-num">7</span> Children's Privacy</div><p>The app is not directed at children under 13. We do not knowingly collect their personal information.</p></div>
-    <div class="privacy-section a4"><div class="privacy-section-title"><span class="ps-num">8</span> Changes to This Policy</div><p>When we update this policy we will revise the date above and notify users of significant changes through the app.</p></div>
-    <div class="privacy-section a4"><div class="privacy-section-title"><span class="ps-num">9</span> Contact</div><div class="privacy-highlight"><p><strong style="color:var(--gold-light)">Simulation Source Code</strong><br><span style="color:var(--text-dim)">kytholek@gmail.com</span></p></div></div>
+    <div class="privacy-section a2"><div class="privacy-section-title"><span class="ps-num">1</span> Who We Are</div><p>Simulation Source Code ("SSC") operates the SSC Numerology application and website. Contact: <span style="color:var(--gold-dim)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3e4e4c57485f5d477e4d57534b525f4a5751504d514b4c5d5b5d515a5b105d5153">[email&#160;protected]</a></span></p></div>
+    <div class="privacy-section a2"><div class="privacy-section-title"><span class="ps-num">2</span> Information We Collect</div><p>Calculator inputs are processed locally and never transmitted. We collect anonymised usage analytics and crash reports only.</p></div>
+    <div class="privacy-section a3"><div class="privacy-section-title"><span class="ps-num">3</span> Data Storage</div><div class="privacy-highlight"><p>Your birth name and birth date are never stored on SSC servers. All calculations are performed on-device.</p></div></div>
+    <div class="privacy-section a3"><div class="privacy-section-title"><span class="ps-num">4</span> Your Rights</div><p>Contact <span style="color:var(--gold-dim)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6d1d1f041b0c0e142d1e040018010c190402031e02181f0e080e020908430e0200">[email&#160;protected]</a></span> to access, correct, or delete your data &#8212; we respond within 30 days.</p></div>
+    <div class="privacy-section a4"><div class="privacy-section-title"><span class="ps-num">5</span> Contact</div><div class="privacy-highlight"><p><strong style="color:var(--gold-light)">Simulation Source Code</strong><br><span style="color:var(--text-dim)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="18686a716e797b61586b71756d74796c7177766b776d6a7b7d7b777c7d367b7775">[email&#160;protected]</a></span></p></div></div>
   </div>
-</div><!-- /page-privacy -->
+</div>
 
-<!-- ════ FOOTER ════ -->
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
@@ -1508,7 +1839,6 @@ footer {
     </div></div>
     <div><div class="footer-col-title">Legal</div><div class="footer-links">
       <button class="footer-link" onclick="showPage('privacy')">Privacy Policy</button>
-      <button class="footer-link" onclick="showPage('privacy')">Terms of Use</button>
     </div></div>
     <div><div class="footer-col-title">Download</div><div class="footer-links">
       <a href="#" class="footer-link" onclick="alert('Coming soon!')">App Store</a>
@@ -1520,7 +1850,116 @@ footer {
     <div class="footer-copy">&#10022; &nbsp;Pythagorean Numerology System</div>
   </div>
 </footer>
-<script>
+
+<!-- ════════════════════════════════════════════════════════════
+     ADMIN OVERLAY — accessed via #admin in URL or Ctrl+Shift+A
+     Password set in adminSystem.PASS below
+════════════════════════════════════════════════════════════ -->
+<button id="admin-trigger" aria-hidden="true" tabindex="-1"></button>
+<div id="admin-toast"></div>
+
+<div id="admin-overlay">
+
+  <!-- LOGIN SCREEN -->
+  <div id="admin-login">
+    <div class="admin-login-sigil">&#10022;</div>
+    <div class="admin-login-title">Admin Access</div>
+    <div class="admin-login-field">
+      <input type="password" id="admin-pass-input" placeholder="Enter passphrase"
+             onkeydown="if(event.key==='Enter') adminSystem.login()">
+    </div>
+    <button class="admin-login-btn" onclick="adminSystem.login()">&#11041; &nbsp;Enter &nbsp;&#11041;</button>
+    <div class="admin-login-error" id="admin-login-error"></div>
+  </div>
+
+  <!-- MAIN PANEL (shown after login) -->
+  <div id="admin-panel">
+
+    <!-- top bar -->
+    <div class="admin-bar">
+      <div class="admin-bar-title">&#10022; &nbsp;SSC Admin &nbsp;&#10022;</div>
+      <div class="admin-bar-actions">
+        <button class="admin-tab-btn active" id="tab-btn-write"  onclick="adminSystem.switchTab('write')">Write Post</button>
+        <button class="admin-tab-btn"        id="tab-btn-posts"  onclick="adminSystem.switchTab('posts')">All Posts</button>
+        <button class="admin-tab-btn"        id="tab-btn-preview" onclick="adminSystem.switchTab('preview')">Preview</button>
+        <button class="admin-close-btn"      onclick="adminSystem.close()">Close &#215;</button>
+      </div>
+    </div>
+
+    <!-- WRITE TAB -->
+    <div class="admin-tab active" id="tab-write">
+      <div class="admin-editor">
+        <input type="hidden" id="admin-editing-id" value="">
+
+        <div class="admin-section-label">· Post Details ·</div>
+
+        <div class="admin-field">
+          <label>Title</label>
+          <input type="text" id="admin-title" placeholder="Your post title">
+        </div>
+
+        <div class="admin-row">
+          <div class="admin-field">
+            <label>Category</label>
+            <select id="admin-category">
+              <option value="numerology">Numerology</option>
+              <option value="philosophy">Philosophy</option>
+              <option value="numbers">The Numbers</option>
+              <option value="practice">Practice</option>
+            </select>
+          </div>
+          <div class="admin-field">
+            <label>Date</label>
+            <input type="text" id="admin-date" placeholder="e.g. March 2025">
+          </div>
+        </div>
+
+        <div class="admin-field">
+          <label>Excerpt (shown on card)</label>
+          <textarea id="admin-excerpt" rows="3" placeholder="A short teaser — one or two sentences."></textarea>
+        </div>
+
+        <div class="admin-section-label" style="margin-top:32px">· Body Content ·</div>
+        <div class="editor-toolbar">
+          <button class="toolbar-btn" onclick="adminSystem.wrap('### ','','heading')">H3</button>
+          <button class="toolbar-btn" onclick="adminSystem.wrap('**','**','bold')"><strong>B</strong></button>
+          <button class="toolbar-btn" onclick="adminSystem.wrap('*','*','italic')"><em>I</em></button>
+          <button class="toolbar-btn" onclick="adminSystem.wrap('> ','','quote')">&#8220;&#8221;</button>
+          <button class="toolbar-btn" onclick="adminSystem.insertBreak()">&#8617; Para</button>
+        </div>
+        <div class="admin-field" style="margin-bottom:0">
+          <label>Body <span style="color:var(--text-muted);font-size:10px;letter-spacing:.05em;text-transform:none;font-family:'EB Garamond',serif">&mdash; supports ### headings, **bold**, *italic*, > blockquote</span></label>
+          <textarea id="admin-body" rows="18" placeholder="Write your article here...&#10;&#10;### Section Heading&#10;&#10;Your paragraph text here.&#10;&#10;> A blockquote goes here."></textarea>
+        </div>
+
+        <div class="admin-actions">
+          <button class="admin-btn-primary"   onclick="adminSystem.publish()">&#11041; &nbsp;Publish Post</button>
+          <button class="admin-btn-secondary" onclick="adminSystem.switchTab('preview')">Preview</button>
+          <button class="admin-btn-secondary" onclick="adminSystem.clearForm()">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- POSTS TAB -->
+    <div class="admin-tab" id="tab-posts">
+      <div class="admin-posts-list">
+        <div class="admin-section-label">· Published Posts ·</div>
+        <div id="admin-posts-list-inner">
+          <div class="admin-empty">No posts yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREVIEW TAB -->
+    <div class="admin-tab" id="tab-preview">
+      <div id="admin-preview-content">
+        <div class="admin-empty">Fill in the Write tab to see a preview.</div>
+      </div>
+    </div>
+
+  </div><!-- /admin-panel -->
+</div><!-- /admin-overlay -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 
 // ─── Init (called after all HTML fragments are loaded) ───
 function initApp() {
@@ -1683,138 +2122,163 @@ function filterBlog(category, btn) {
 
 
 
-// ══════════════════════════════════════════════════════════
-// SIMULATION DESCENT — Canvas Backgrounds
-// ══════════════════════════════════════════════════════════
-(function () {
-  'use strict';
   var DPR = Math.min(window.devicePixelRatio || 1, 2);
 
-  /* ── resize helper ── */
+  // ── Helpers ──────────────────────────────────────────────────
   function resize(canvas) {
-    var p  = canvas.parentElement;
-    var w  = p.offsetWidth;
-    var h  = p.offsetHeight;
-    canvas.width  = Math.round(w * DPR);
-    canvas.height = Math.round(h * DPR);
-    canvas.style.width  = w + 'px';
-    canvas.style.height = h + 'px';
-    return { w: canvas.width, h: canvas.height };
+    var rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width  = Math.round(rect.width  * DPR);
+    canvas.height = Math.round(rect.height * DPR);
+    canvas.style.width  = rect.width  + 'px';
+    canvas.style.height = rect.height + 'px';
   }
 
-  /* ── canvas fade-in on scroll via IntersectionObserver ── */
-  function initFades() {
-    if (!window.IntersectionObserver) {
-      document.querySelectorAll('.layer-canvas').forEach(function(c){ c.style.opacity = 1; });
-      return;
-    }
-    var io = new IntersectionObserver(function(entries) {
-      entries.forEach(function(e) { if (e.isIntersecting) e.target.style.opacity = 1; });
-    }, { threshold: 0.04, rootMargin: '0px 0px -4% 0px' });
-    document.querySelectorAll('.layer-canvas').forEach(function(c){ io.observe(c); });
+  // Eased 0→1 progress as section scrolls into view
+  function sectionProgress(el) {
+    if (!el) return 0;
+    var rect = el.getBoundingClientRect();
+    var vh   = window.innerHeight;
+    var raw  = (vh - rect.top) / (vh + rect.height * 0.25);
+    var t    = Math.max(0, Math.min(1, raw));
+    // ease-in-out cubic
+    return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
   }
 
-  /* ── layer badge slide-in ── */
-  function initBadges() {
+  // Canvas fade-in driven by IntersectionObserver (CSS opacity transition)
+  function initScrollFades() {
     if (!window.IntersectionObserver) {
-      document.querySelectorAll('.layer-label').forEach(function(l){ l.classList.add('visible'); });
+      document.querySelectorAll('.layer-canvas').forEach(function(c){c.style.opacity='1';});
       return;
     }
-    var io = new IntersectionObserver(function(entries) {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) e.target.style.opacity = '1';
+      });
+    }, { threshold: 0.06, rootMargin: '0px 0px -5% 0px' });
+    document.querySelectorAll('.layer-canvas').forEach(function(c){ obs.observe(c); });
+  }
+
+  // Layer badge fade-in
+  function initLayerLabels() {
+    if (!window.IntersectionObserver) {
+      document.querySelectorAll('.layer-label').forEach(function(l){l.classList.add('visible');});
+      return;
+    }
+    var obs = new IntersectionObserver(function(entries) {
       entries.forEach(function(e){ if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.15 });
-    document.querySelectorAll('.layer-label').forEach(function(l){ io.observe(l); });
+    }, { threshold: 0.18 });
+    document.querySelectorAll('.layer-label').forEach(function(l){ obs.observe(l); });
   }
 
-  /* ─────────────────────────────────────────────────────────
-     LAYER 2 — PHYSICAL SUBSTRATE
-     Smooth slow-drifting geological gradient blobs.
-     Thin amber vein lines radiate from a centre point.
-     No noise, no per-pixel loops — pure radial/linear gradients.
-  ───────────────────────────────────────────────────────── */
+  // ══════════════════════════════════════════════════════════════
+  // LAYER 2 — PHYSICAL SUBSTRATE
+  // Deep mineral dark with large slow-drifting radial blobs that
+  // suggest geological strata. Subtle hair-thin crack lines emerge
+  // as amber veins. No noise — smooth professional gradients only.
+  // ══════════════════════════════════════════════════════════════
   function initSolid() {
     var canvas = document.getElementById('canvas-solid');
     if (!canvas) return;
+    var section = canvas.parentElement;
     var ctx = canvas.getContext('2d');
-    var w, h, t = 0, veins = [];
+    var w, h, t = 0;
 
-    /* Blob definitions — each drifts slowly around its anchor */
-    var BLOBS = [
-      { ax:0.20, ay:0.30, ox:0, oy:0, spx:0.00022, spy:0.00014, r:0.72, c0:'rgba(58,38,16,', c1:'rgba(32,20,6,' },
-      { ax:0.78, ay:0.70, ox:0, oy:0, spx:0.00018, spy:0.00018, r:0.65, c0:'rgba(46,30,12,', c1:'rgba(26,16,4,' },
-      { ax:0.50, ay:1.05, ox:0, oy:0, spx:0.00015, spy:0.00010, r:0.80, c0:'rgba(72,50,18,', c1:'rgba(40,24,6,' },
-      { ax:0.15, ay:0.80, ox:0, oy:0, spx:0.00020, spy:0.00016, r:0.55, c0:'rgba(42,27,10,', c1:'rgba(24,14,3,' },
+    // Slow-drifting blob centres (normalised 0-1)
+    var blobs = [
+      { x:0.18, y:0.25, vx: 0.00018, vy: 0.00012, r:0.7, h1:'rgba(55,38,18,', h2:'rgba(38,25,10,' },
+      { x:0.82, y:0.72, vx:-0.00015, vy:-0.00010, r:0.65,'h1':'rgba(48,32,14,','h2':'rgba(30,18,6,' },
+      { x:0.50, y:1.05, vx: 0.00010, vy:-0.00008, r:0.8, h1:'rgba(70,48,20,', h2:'rgba(45,28,8,' },
+      { x:0.22, y:0.80, vx:-0.00012, vy: 0.00015, r:0.55,'h1':'rgba(42,28,12,','h2':'rgba(28,16,4,' },
     ];
 
-    function buildVeins() {
-      veins = [];
-      var cx = w * 0.5, cy = h * 0.44;
-      var N = 11;
-      for (var i = 0; i < N; i++) {
-        var a    = (i / N) * Math.PI * 2;
-        var len  = (0.16 + Math.random() * 0.14) * Math.max(w, h);
-        var bend = (Math.random() - 0.5) * 0.28;
-        var x2   = cx + Math.cos(a + bend) * len;
-        var y2   = cy + Math.sin(a + bend) * len;
-        veins.push({ x1: cx, y1: cy, x2: x2, y2: y2, ph: i * 0.65 });
-        /* one branch per vein */
-        var bx = cx + (x2-cx)*0.42 + Math.cos(a+1.5)*len*0.14;
-        var by = cy + (y2-cy)*0.42 + Math.sin(a+1.5)*len*0.14;
-        veins.push({ x1: cx+(x2-cx)*0.42, y1: cy+(y2-cy)*0.42, x2: bx, y2: by, ph: i*0.65+1.3 });
-      }
+    // Crack segments — fixed geometric structure for elegance
+    var cracks = [];
+    function buildCracks() {
+      cracks = [];
+      var cx = w * 0.5, cy = h * 0.45;
+      var angles = [0, 0.52, 1.05, 1.7, 2.4, 3.1, 3.8, 4.6, 5.3];
+      angles.forEach(function(a, i) {
+        var len = (0.18 + Math.random() * 0.14) * Math.max(w, h);
+        var bend = (Math.random() - 0.5) * 0.3;
+        var x1 = cx + Math.cos(a) * len * 0.15;
+        var y1 = cy + Math.sin(a) * len * 0.15;
+        var x2 = cx + Math.cos(a + bend) * len;
+        var y2 = cy + Math.sin(a + bend) * len;
+        // sub-crack
+        var sx = x1 + (x2-x1)*0.4 + Math.cos(a+1.4)*len*0.12;
+        var sy = y1 + (y2-y1)*0.4 + Math.sin(a+1.4)*len*0.12;
+        cracks.push({x1:x1,y1:y1,x2:x2,y2:y2,phase:i*0.7});
+        cracks.push({x1:x1+(x2-x1)*0.4,y1:y1+(y2-y1)*0.4,x2:sx,y2:sy,phase:i*0.7+1.2});
+      });
     }
 
     function seed() {
-      var d = resize(canvas);
-      w = d.w; h = d.h;
-      buildVeins();
+      resize(canvas);
+      w = canvas.width; h = canvas.height;
+      buildCracks();
     }
 
     function draw() {
-      t += 0.22;
+      t += 0.25;
       ctx.clearRect(0, 0, w, h);
 
-      /* base — very dark warm black */
-      var bg = ctx.createRadialGradient(w*0.40, h*0.36, 0, w*0.40, h*0.36, Math.max(w,h)*0.95);
-      bg.addColorStop(0, '#0e0a06');
-      bg.addColorStop(0.55, '#080603');
-      bg.addColorStop(1, '#030201');
+      // ── Rich dark stone base ──
+      var bg = ctx.createRadialGradient(w*0.42, h*0.38, 0, w*0.42, h*0.38, Math.max(w,h)*0.9);
+      bg.addColorStop(0,   '#0f0b07');
+      bg.addColorStop(0.5, '#080604');
+      bg.addColorStop(1,   '#030201');
       ctx.fillStyle = bg; ctx.fillRect(0,0,w,h);
 
-      /* geological blobs */
-      BLOBS.forEach(function(b) {
-        b.ox += b.spx; b.oy += b.spy;
-        var bx = b.ax + Math.sin(b.ox) * 0.12;
-        var by = b.ay + Math.cos(b.oy) * 0.10;
-        var br = Math.max(w,h) * b.r * (0.88 + 0.12 * Math.sin(t*0.003 + b.ax*5));
-        var grd = ctx.createRadialGradient(bx*w, by*h, 0, bx*w, by*h, br);
-        grd.addColorStop(0,   b.c0 + '0.20)');
-        grd.addColorStop(0.5, b.c1 + '0.09)');
+      // ── Geological strata blobs ──
+      blobs.forEach(function(b) {
+        b.x += b.vx; b.y += b.vy;
+        if (b.x < -0.1 || b.x > 1.1) b.vx *= -1;
+        if (b.y < -0.1 || b.y > 1.2) b.vy *= -1;
+        var breathe = 0.85 + 0.15 * Math.sin(t * 0.003 + b.x * 6);
+        var rad     = b.r * Math.max(w, h) * breathe;
+        var grd = ctx.createRadialGradient(b.x*w, b.y*h, 0, b.x*w, b.y*h, rad);
+        grd.addColorStop(0,   b.h1 + '0.22)');
+        grd.addColorStop(0.5, b.h2 + '0.10)');
         grd.addColorStop(1,   'transparent');
         ctx.fillStyle = grd; ctx.fillRect(0,0,w,h);
       });
 
-      /* amber veins */
+      // ── Amber vein network ──
       ctx.save();
-      veins.forEach(function(v) {
-        var p = 0.22 + 0.78 * (0.5 + 0.5 * Math.sin(t*0.005 + v.ph));
-        /* soft outer glow */
-        ctx.lineWidth = 3; ctx.shadowBlur = 16;
-        ctx.shadowColor = 'rgba(215,165,55,0.45)';
-        ctx.strokeStyle = 'rgba(175,130,42,' + (0.04*p) + ')';
-        ctx.beginPath(); ctx.moveTo(v.x1,v.y1); ctx.lineTo(v.x2,v.y2); ctx.stroke();
-        /* crisp core line */
-        ctx.lineWidth = 0.6; ctx.shadowBlur = 3;
-        ctx.strokeStyle = 'rgba(235,190,80,' + (0.38*p) + ')';
-        ctx.beginPath(); ctx.moveTo(v.x1,v.y1); ctx.lineTo(v.x2,v.y2); ctx.stroke();
+      cracks.forEach(function(c) {
+        var pulse = 0.25 + 0.75 * (0.5 + 0.5 * Math.sin(t * 0.005 + c.phase));
+        // Glow pass
+        ctx.lineWidth   = 2.5;
+        ctx.shadowBlur  = 12;
+        ctx.shadowColor = 'rgba(210,160,60,0.5)';
+        ctx.strokeStyle = 'rgba(180,135,45,' + (0.04 * pulse) + ')';
+        ctx.beginPath(); ctx.moveTo(c.x1,c.y1); ctx.lineTo(c.x2,c.y2); ctx.stroke();
+        // Sharp core
+        ctx.lineWidth   = 0.6;
+        ctx.shadowBlur  = 4;
+        ctx.strokeStyle = 'rgba(230,185,80,' + (0.35 * pulse) + ')';
+        ctx.beginPath(); ctx.moveTo(c.x1,c.y1); ctx.lineTo(c.x2,c.y2); ctx.stroke();
       });
       ctx.restore();
 
-      /* upwelling heat from bottom */
-      var heat = ctx.createLinearGradient(0, h*0.55, 0, h);
-      heat.addColorStop(0, 'transparent');
-      heat.addColorStop(1, 'rgba(110,68,18,0.14)');
+      // ── Heat rising from below ──
+      var heat = ctx.createLinearGradient(0, h*0.6, 0, h);
+      heat.addColorStop(0,   'transparent');
+      heat.addColorStop(0.6, 'rgba(90,55,15,0.06)');
+      heat.addColorStop(1,   'rgba(120,75,20,0.14)');
       ctx.fillStyle = heat; ctx.fillRect(0,0,w,h);
+
+      // ── Top fade to void ──
+      var topfade = ctx.createLinearGradient(0,0,0,h*0.25);
+      topfade.addColorStop(0,   'rgba(0,0,0,0.85)');
+      topfade.addColorStop(1,   'transparent');
+      ctx.fillStyle = topfade; ctx.fillRect(0,0,w,h*0.25);
+
+      // ── Bottom fade to void ──
+      var botfade = ctx.createLinearGradient(0,h*0.75,0,h);
+      botfade.addColorStop(0,   'transparent');
+      botfade.addColorStop(1,   'rgba(0,0,0,0.9)');
+      ctx.fillStyle = botfade; ctx.fillRect(0,h*0.75,w,h*0.25);
 
       requestAnimationFrame(draw);
     }
@@ -1822,122 +2286,141 @@ function filterBlog(category, btn) {
     seed(); window.addEventListener('resize', seed); draw();
   }
 
-  /* ─────────────────────────────────────────────────────────
-     LAYER 3 — HOLOGRAPHIC FIELD
-     Slow aurora blobs (elliptical radial gradients in teal/blue).
-     Clean perspective grid with glowing horizon line.
-     Small bright node particles drift across the field.
-  ───────────────────────────────────────────────────────── */
+  // ══════════════════════════════════════════════════════════════
+  // LAYER 3 — HOLOGRAPHIC FIELD
+  // Slow aurora-like colour clouds in deep teal/cyan, a clean
+  // perspective grid with glowing horizon, and drifting node orbs.
+  // Everything is smooth radial/linear gradients — no pixellation.
+  // ══════════════════════════════════════════════════════════════
   function initHolo() {
     var canvas = document.getElementById('canvas-holo');
     if (!canvas) return;
+    var section = canvas.parentElement;
     var ctx = canvas.getContext('2d');
-    var w, h, t = 0, nodes = [];
+    var w, h, t = 0;
 
-    /* Aurora cloud definitions */
-    var CLOUDS = [
-      { ax:0.20, ay:0.28, ox:0, oy:0, spx:0.00018, spy:0.00013, rx:0.38, ry:0.20, ph:0.0, cyan:true  },
-      { ax:0.75, ay:0.55, ox:0, oy:0, spx:0.00014, spy:0.00017, rx:0.32, ry:0.16, ph:1.4, cyan:false },
-      { ax:0.45, ay:0.78, ox:0, oy:0, spx:0.00020, spy:0.00010, rx:0.42, ry:0.22, ph:2.8, cyan:true  },
-      { ax:0.82, ay:0.20, ox:0, oy:0, spx:0.00016, spy:0.00014, rx:0.28, ry:0.15, ph:4.2, cyan:false },
-      { ax:0.12, ay:0.65, ox:0, oy:0, spx:0.00012, spy:0.00018, rx:0.30, ry:0.18, ph:5.6, cyan:true  },
-    ];
-
-    function buildNodes() {
-      nodes = [];
-      for (var i = 0; i < 9; i++) {
-        nodes.push({
-          x: Math.random(), y: Math.random(),
-          vx: (Math.random()-0.5)*0.00020, vy: (Math.random()-0.5)*0.00015,
-          r: 0.018 + Math.random()*0.022, ph: Math.random()*Math.PI*2
+    // Aurora blobs
+    var aurora = [];
+    function buildAurora() {
+      aurora = [];
+      for (var i = 0; i < 7; i++) {
+        aurora.push({
+          x: Math.random(), y: 0.1 + Math.random() * 0.7,
+          vx: (Math.random()-.5) * 0.00020,
+          vy: (Math.random()-.5) * 0.00012,
+          rx: 0.35 + Math.random() * 0.25,
+          ry: 0.18 + Math.random() * 0.15,
+          phase: Math.random() * Math.PI * 2,
+          cyan: Math.random() > 0.4
         });
       }
     }
 
     function seed() {
-      var d = resize(canvas); w = d.w; h = d.h; buildNodes();
+      resize(canvas); w = canvas.width; h = canvas.height; buildAurora();
     }
 
     function draw() {
-      t += 0.35;
+      t += 0.4;
       ctx.clearRect(0, 0, w, h);
 
-      /* base */
-      var bg = ctx.createLinearGradient(0,0,0,h);
-      bg.addColorStop(0, '#010508'); bg.addColorStop(0.5, '#020609'); bg.addColorStop(1, '#010406');
+      // ── Deep space base ──
+      var bg = ctx.createLinearGradient(0, 0, 0, h);
+      bg.addColorStop(0,   '#010407');
+      bg.addColorStop(0.45,'#020609');
+      bg.addColorStop(1,   '#010305');
       ctx.fillStyle = bg; ctx.fillRect(0,0,w,h);
 
-      /* aurora clouds */
-      CLOUDS.forEach(function(c) {
-        c.ox += c.spx; c.oy += c.spy;
-        var cx = c.ax + Math.sin(c.ox) * 0.10;
-        var cy = c.ay + Math.cos(c.oy) * 0.08;
-        var rX = c.rx * w * (0.85 + 0.15*Math.sin(t*0.004+c.ph));
-        var rY = c.ry * h * (0.85 + 0.15*Math.cos(t*0.004+c.ph*0.7));
-        var pulse = 0.5 + 0.5 * Math.sin(t*0.006 + c.ph*1.3);
+      // ── Aurora / nebula clouds ──
+      aurora.forEach(function(a) {
+        a.x += a.vx; a.y += a.vy;
+        if (a.x<-0.15||a.x>1.15) a.vx*=-1;
+        if (a.y<-0.05||a.y>1.05) a.vy*=-1;
+        var breathe = 0.8 + 0.2 * Math.sin(t * 0.004 + a.phase);
+        var rX = a.rx * w * breathe, rY = a.ry * h * breathe;
+        var pulse = 0.5 + 0.5 * Math.sin(t * 0.006 + a.phase * 1.3);
 
         ctx.save();
-        ctx.translate(cx*w, cy*h);
-        ctx.scale(1, rY/rX);
-        var grd = ctx.createRadialGradient(0,0,0,0,0,rX);
-        if (c.cyan) {
-          grd.addColorStop(0,   'rgba(0,195,218,' + (0.10*pulse) + ')');
-          grd.addColorStop(0.5, 'rgba(0,155,188,' + (0.04*pulse) + ')');
+        ctx.translate(a.x * w, a.y * h);
+        ctx.scale(1, rY / rX);
+        var grd = ctx.createRadialGradient(0, 0, 0, 0, 0, rX);
+        if (a.cyan) {
+          grd.addColorStop(0,   'rgba(0,195,215,' + (0.11 * pulse) + ')');
+          grd.addColorStop(0.5, 'rgba(0,155,185,' + (0.05 * pulse) + ')');
         } else {
-          grd.addColorStop(0,   'rgba(18,75,185,' + (0.08*pulse) + ')');
-          grd.addColorStop(0.5, 'rgba(8,45,135,'  + (0.03*pulse) + ')');
+          grd.addColorStop(0,   'rgba(20,80,180,' + (0.08 * pulse) + ')');
+          grd.addColorStop(0.5, 'rgba(10,50,130,' + (0.03 * pulse) + ')');
         }
         grd.addColorStop(1, 'transparent');
         ctx.fillStyle = grd;
-        ctx.beginPath(); ctx.arc(0,0,rX,0,Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(0, 0, rX, 0, Math.PI*2); ctx.fill();
         ctx.restore();
       });
 
-      /* perspective grid */
+      // ── Perspective grid ──
       ctx.save();
-      ctx.lineWidth = 0.65;
-      var hor = h * 0.40;
+      var horizon = h * 0.40;
+      ctx.lineWidth = 0.7;
 
-      /* horizontals — exponentially spaced, fade near horizon */
-      for (var i = 1; i < 26; i++) {
-        var frac = Math.pow(i/26, 2.4);
-        var y    = hor + (h - hor) * frac;
-        var a    = Math.pow(1-frac, 1.6) * 0.26;
-        ctx.strokeStyle = 'rgba(0,198,218,' + a + ')';
-        ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
+      // Horizontals — exponential density toward horizon, fade at edges
+      for (var i = 1; i < 24; i++) {
+        var frac = Math.pow(i / 24, 2.2);
+        var y    = horizon + (h - horizon) * frac;
+        var fade = Math.pow(1 - frac, 1.5) * 0.28;
+        ctx.strokeStyle = 'rgba(0,200,215,' + fade + ')';
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
       }
 
-      /* verticals — converge at vanishing point */
-      for (var i = -15; i <= 15; i++) {
-        var ex = w*0.5 + (i/15) * w * 0.55;
-        var ca = Math.pow(1 - Math.abs(i/15), 2.0) * 0.13;
-        ctx.strokeStyle = 'rgba(0,195,218,' + ca + ')';
-        ctx.beginPath(); ctx.moveTo(w*0.5, hor); ctx.lineTo(ex, h+80); ctx.stroke();
+      // Verticals — converging at vanishing point
+      var vpx = w * 0.5;
+      for (var i = -14; i <= 14; i++) {
+        var spread  = (i / 14) * w * 0.52;
+        var ex      = vpx + spread;
+        var ey      = h + 80;
+        var centred = Math.pow(1 - Math.abs(i/14), 2) * 0.14;
+        ctx.strokeStyle = 'rgba(0,195,215,' + centred + ')';
+        ctx.beginPath(); ctx.moveTo(vpx, horizon); ctx.lineTo(ex, ey); ctx.stroke();
       }
 
-      /* horizon glow */
-      var hg = ctx.createLinearGradient(0, hor-3, 0, hor+3);
-      hg.addColorStop(0, 'transparent'); hg.addColorStop(0.5,'rgba(0,215,225,0.32)'); hg.addColorStop(1,'transparent');
-      ctx.fillStyle = hg; ctx.fillRect(0, hor-3, w, 6);
-      var hb = ctx.createLinearGradient(0, hor-70, 0, hor+70);
-      hb.addColorStop(0,'transparent'); hb.addColorStop(0.5,'rgba(0,190,215,0.035)'); hb.addColorStop(1,'transparent');
-      ctx.fillStyle = hb; ctx.fillRect(0, hor-70, w, 140);
+      // Horizon glow line
+      var hglow = ctx.createLinearGradient(0, horizon-2, 0, horizon+2);
+      hglow.addColorStop(0, 'transparent');
+      hglow.addColorStop(0.5,'rgba(0,215,225,0.35)');
+      hglow.addColorStop(1, 'transparent');
+      ctx.fillStyle = hglow; ctx.fillRect(0, horizon-2, w, 4);
+
+      // Horizon wide bloom
+      var hbloom = ctx.createLinearGradient(0, horizon-60, 0, horizon+60);
+      hbloom.addColorStop(0, 'transparent');
+      hbloom.addColorStop(0.5,'rgba(0,190,215,0.04)');
+      hbloom.addColorStop(1, 'transparent');
+      ctx.fillStyle = hbloom; ctx.fillRect(0, horizon-60, w, 120);
       ctx.restore();
 
-      /* drifting nodes */
-      nodes.forEach(function(n) {
-        n.x += n.vx; n.y += n.vy;
-        if (n.x<0||n.x>1) n.vx*=-1;
-        if (n.y<0||n.y>1) n.vy*=-1;
-        var p  = 0.5 + 0.5*Math.sin(t*0.022 + n.ph);
-        var nr = n.r * Math.max(w,h) * (0.6+0.4*p);
-        var grd = ctx.createRadialGradient(n.x*w,n.y*h,0,n.x*w,n.y*h,nr);
-        grd.addColorStop(0,   'rgba(55,225,242,' + (0.60*p) + ')');
-        grd.addColorStop(0.4, 'rgba(0,175,212,' + (0.18*p) + ')');
+      // ── Floating node particles ──
+      aurora.forEach(function(a, i) {
+        if (i >= 5) return; // use first 5 as nodes too
+        var px = a.x * w, py = a.y * h;
+        var pulse = 0.5 + 0.5 * Math.sin(t * 0.025 + a.phase * 2);
+        var nr = 0.025 * Math.max(w,h) * (0.6 + 0.4 * pulse);
+        var grd = ctx.createRadialGradient(px,py,0,px,py,nr);
+        grd.addColorStop(0,   'rgba(60,225,240,' + (0.55*pulse) + ')');
+        grd.addColorStop(0.4, 'rgba(0,180,210,' + (0.2*pulse) + ')');
         grd.addColorStop(1,   'transparent');
         ctx.fillStyle = grd;
-        ctx.beginPath(); ctx.arc(n.x*w,n.y*h,nr,0,Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(px, py, nr, 0, Math.PI*2); ctx.fill();
       });
+
+      // ── Top/bottom void fades ──
+      var topfade = ctx.createLinearGradient(0,0,0,h*0.22);
+      topfade.addColorStop(0,'rgba(0,0,0,0.92)');
+      topfade.addColorStop(1,'transparent');
+      ctx.fillStyle = topfade; ctx.fillRect(0,0,w,h*0.22);
+
+      var botfade = ctx.createLinearGradient(0,h*0.78,0,h);
+      botfade.addColorStop(0,'transparent');
+      botfade.addColorStop(1,'rgba(0,0,0,0.92)');
+      ctx.fillStyle = botfade; ctx.fillRect(0,h*0.78,w,h*0.22);
 
       requestAnimationFrame(draw);
     }
@@ -1945,91 +2428,112 @@ function filterBlog(category, btn) {
     seed(); window.addEventListener('resize', seed); draw();
   }
 
-  /* ─────────────────────────────────────────────────────────
-     LAYER 4 — SOURCE CODE
-     Three depth-layers of matrix rain (far/dim, mid, near/gold).
-     Proper DPR scaling. Numerology glyphs in near layer.
-     Strong vignette for a clean, moody look.
-  ───────────────────────────────────────────────────────── */
+  // ══════════════════════════════════════════════════════════════
+  // LAYER 4 — SOURCE CODE
+  // Three-depth matrix rain: far (dim/slow), mid, near (gold/fast).
+  // Characters include numerology glyphs. Smooth column gaps,
+  // proper DPR scaling, strong vignette for professional look.
+  // ══════════════════════════════════════════════════════════════
   function initMatrix() {
     var canvas = document.getElementById('canvas-matrix');
     if (!canvas) return;
+    var section = canvas.parentElement;
     var ctx = canvas.getContext('2d');
-    var w, h, layers = [];
+    var w, h, layers = [], t = 0;
 
-    var GLYPHS = '0123456789ΩΨΛφπ∑Δ∞∂⓵⓶⓷⓸⓹⓺';
+    var GLYPHS = '0123456789\u03A9\u03A8\u039B\u039E\u03C6\u03C0\u2211\u0394\u221E\u221A\u2202\u24F5\u24F6\u24F7\u24F8\u24F9\u24FA\u24FB\u24FC';
     var LATIN  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    function rch(s){ return s[Math.floor(Math.random()*s.length)]; }
 
-    /* depth layer configs (values in CSS px, scaled by DPR below) */
-    var DEFS = [
-      /* far  */ { fsPx:10, gapMul:2.0, speed:0.16, opa:0.12, rgb:[0,140,32],    leadRGB:null,       chars:GLYPHS+LATIN },
-      /* mid  */ { fsPx:13, gapMul:1.8, speed:0.30, opa:0.30, rgb:[0,182,46],    leadRGB:null,       chars:GLYPHS },
-      /* near */ { fsPx:15, gapMul:4.2, speed:0.58, opa:0.78, rgb:[0,205,52],    leadRGB:[218,182,62], chars:GLYPHS },
+    function rch(pool) { return pool[Math.floor(Math.random() * pool.length)]; }
+
+    var LAYER_DEFS = [
+      // far: dim, slow, tiny, dense
+      { fsPx:11, gap:1.8, speed:0.18, maxOpa:0.14, col:[0,145,35],    leadCol:null,       pool: GLYPHS },
+      // mid
+      { fsPx:14, gap:2.2, speed:0.32, maxOpa:0.32, col:[0,185,48],    leadCol:null,       pool: GLYPHS + LATIN },
+      // near: bright, fast, sparse, gold tinted leads
+      { fsPx:16, gap:4.5, speed:0.60, maxOpa:0.80, col:[0,210,55],    leadCol:[220,185,65], pool: GLYPHS },
     ];
 
     function seed() {
-      var d = resize(canvas); w = d.w; h = d.h;
-      layers = DEFS.map(function(def) {
-        var fs  = def.fsPx * DPR;
-        var gap = def.gapMul * def.fsPx * DPR;
-        var n   = Math.floor(w / gap);
-        var drops = [];
-        for (var i=0;i<n;i++) drops.push(-(Math.random()*(h/fs)*1.3));
-        return { def:def, fs:fs, gap:gap, n:n, drops:drops };
+      resize(canvas);
+      w = canvas.width; h = canvas.height;
+      layers = LAYER_DEFS.map(function(def) {
+        var fsPx   = def.fsPx * DPR;
+        var gapPx  = def.gap  * def.fsPx * DPR;
+        var cols   = Math.floor(w / gapPx);
+        var drops  = [];
+        for (var i = 0; i < cols; i++) drops.push(-(Math.random() * (h / fsPx) * 1.2));
+        return { def:def, fsPx:fsPx, gapPx:gapPx, cols:cols, drops:drops };
       });
     }
 
     function draw() {
-      /* persistent fade — leave short trails */
-      ctx.fillStyle = 'rgba(0,0,0,0.048)';
-      ctx.fillRect(0,0,w,h);
+      t++;
 
-      layers.forEach(function(L) {
-        var def = L.def;
-        ctx.font = L.fs + 'px "Courier New",monospace';
+      // Trail fade — slightly more opaque than traditional for cleaner look
+      ctx.fillStyle = 'rgba(0,0,0,0.055)';
+      ctx.fillRect(0, 0, w, h);
 
-        for (var i=0;i<L.n;i++) {
-          var x = i * L.gap;
-          var y = L.drops[i] * L.fs;
+      layers.forEach(function(layer) {
+        var def     = layer.def;
+        var baseOpa = def.maxOpa;
+        ctx.font    = layer.fsPx + 'px "Courier New", monospace';
 
-          if (y > -L.fs && y < h + L.fs) {
-            /* lead char */
-            var useGold = def.leadRGB && Math.random() > 0.12;
-            if (useGold) {
-              ctx.fillStyle = 'rgba('+def.leadRGB[0]+','+def.leadRGB[1]+','+def.leadRGB[2]+','+(def.opa*(0.72+0.28*Math.random()))+')';
-            } else if (Math.random() > 0.97) {
-              ctx.fillStyle = 'rgba(255,255,255,'+(def.opa*0.85)+')';
+        for (var i = 0; i < layer.cols; i++) {
+          var x = i * layer.gapPx;
+          var y = layer.drops[i] * layer.fsPx;
+
+          if (y > 0 && y < h + layer.fsPx) {
+            // Lead character
+            var isGold = def.leadCol && Math.random() > 0.15;
+            if (isGold) {
+              ctx.fillStyle = 'rgba(' + def.leadCol[0]+','+def.leadCol[1]+','+def.leadCol[2]+',' + (baseOpa * (0.7 + 0.3*Math.random())) + ')';
+            } else if (Math.random() > 0.96) {
+              ctx.fillStyle = 'rgba(255,255,255,' + (baseOpa * 0.9) + ')';
             } else {
-              ctx.fillStyle = 'rgba('+def.rgb[0]+','+def.rgb[1]+','+def.rgb[2]+','+(def.opa*(0.55+0.45*Math.random()))+')';
+              ctx.fillStyle = 'rgba(' + def.col[0]+','+def.col[1]+','+def.col[2]+',' + (baseOpa * (0.6 + 0.4*Math.random())) + ')';
             }
-            if (y>0 && y<h) ctx.fillText(rch(def.chars), x, y);
+            if (y < h) ctx.fillText(rch(def.pool), x, y);
 
-            /* fading trail */
-            for (var s=1;s<=5;s++) {
-              var ty = y - s*L.fs;
-              if (ty < 0) break;
-              var ta = def.opa * Math.pow(0.50, s);
-              ctx.fillStyle = 'rgba(0,'+def.rgb[1]+','+def.rgb[2]+','+ta+')';
-              ctx.fillText(rch('0123456789'), x, ty);
+            // Trail — 4 steps with tight opacity decay
+            for (var step = 1; step <= 4; step++) {
+              var trailY = y - step * layer.fsPx;
+              if (trailY < 0) break;
+              var trailOpa = baseOpa * Math.pow(0.55, step);
+              ctx.fillStyle = 'rgba(0,' + def.col[1] + ',' + def.col[2] + ',' + trailOpa + ')';
+              ctx.fillText(rch('0123456789'), x, trailY);
             }
           }
 
-          L.drops[i] += def.speed;
-          if (L.drops[i]*L.fs > h + L.fs*6 && Math.random() > 0.974) {
-            L.drops[i] = -(Math.random()*28);
+          layer.drops[i] += def.speed;
+          if (layer.drops[i] * layer.fsPx > h + layer.fsPx * 5 && Math.random() > 0.975) {
+            layer.drops[i] = -(Math.random() * 30);
           }
         }
       });
 
-      /* bottom green fog */
-      var fog = ctx.createLinearGradient(0, h*0.62, 0, h);
-      fog.addColorStop(0,'transparent'); fog.addColorStop(1,'rgba(0,32,8,0.42)');
-      ctx.fillStyle = fog; ctx.fillRect(0,h*0.62,w,h*0.38);
+      // Deep green fog at bottom
+      var fog = ctx.createLinearGradient(0, h*0.65, 0, h);
+      fog.addColorStop(0, 'transparent');
+      fog.addColorStop(1, 'rgba(0,35,8,0.4)');
+      ctx.fillStyle = fog; ctx.fillRect(0, h*0.65, w, h*0.35);
 
-      /* radial vignette */
-      var vg = ctx.createRadialGradient(w*.5,h*.42,h*.16,w*.5,h*.42,h*.90);
-      vg.addColorStop(0,'transparent'); vg.addColorStop(1,'rgba(0,0,0,0.78)');
+      // Top/bottom void
+      var topfade = ctx.createLinearGradient(0,0,0,h*0.2);
+      topfade.addColorStop(0,'rgba(0,0,0,0.95)');
+      topfade.addColorStop(1,'transparent');
+      ctx.fillStyle = topfade; ctx.fillRect(0,0,w,h*0.2);
+
+      var botfade = ctx.createLinearGradient(0,h*0.8,0,h);
+      botfade.addColorStop(0,'transparent');
+      botfade.addColorStop(1,'rgba(0,0,0,0.95)');
+      ctx.fillStyle = botfade; ctx.fillRect(0,h*0.8,w,h*0.2);
+
+      // Soft radial vignette
+      var vg = ctx.createRadialGradient(w*.5,h*.45,h*.18, w*.5,h*.45,h*.88);
+      vg.addColorStop(0, 'transparent');
+      vg.addColorStop(1, 'rgba(0,0,0,0.72)');
       ctx.fillStyle = vg; ctx.fillRect(0,0,w,h);
 
       requestAnimationFrame(draw);
@@ -2038,19 +2542,625 @@ function filterBlog(category, btn) {
     seed(); window.addEventListener('resize', seed); draw();
   }
 
-  /* ── Boot ── */
-  function boot() {
-    setTimeout(function(){
-      initSolid(); initHolo(); initMatrix();
-      initFades(); initBadges();
+  // ── Boot ─────────────────────────────────────────────────────
+  function bootSimulation() {
+    setTimeout(function() {
+      initSolid();
+      initHolo();
+      initMatrix();
+      initScrollFades();
+      initLayerLabels();
     }, 60);
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
-  else boot();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootSimulation);
+  } else {
+    bootSimulation();
+  }
 
 })();
 
+
+
+
+// ══════════════════════════════════════════════════════════════
+// SSC ADMIN SYSTEM — Blog CMS
+// Access: navigate to #admin in the URL, or press Ctrl+Shift+A
+// Password: set PASS below
+// ══════════════════════════════════════════════════════════════
+
+var adminSystem = (function () {
+  'use strict';
+
+  // ── CHANGE THIS PASSWORD ────────────────────────────────────
+  var PASS = 'ssc2025';
+  // ────────────────────────────────────────────────────────────
+
+  var STORAGE_KEY = 'ssc-blog-posts';
+  var posts = [];       // loaded from storage
+  var editingId = null; // null = new post, string = editing existing
+
+  // ── Storage helpers (uses artifact persistent storage API) ──
+  function loadPosts() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      posts = raw ? JSON.parse(raw) : [];
+    } catch (e) { posts = []; }
+  }
+
+  function savePosts() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+    } catch (e) {
+      showToast('Storage error — posts may not persist');
+    }
+  }
+
+  // ── Open / Close ────────────────────────────────────────────
+  function open() {
+    var overlay = document.getElementById('admin-overlay');
+    if (!overlay) return;
+    overlay.classList.add('open');
+    // If already authed this session
+    if (sessionStorage.getItem('ssc-admin-auth') === '1') {
+      showPanel();
+    } else {
+      document.getElementById('admin-login').style.display = 'flex';
+      document.getElementById('admin-panel').classList.remove('open');
+      setTimeout(function () {
+        var inp = document.getElementById('admin-pass-input');
+        if (inp) inp.focus();
+      }, 100);
+    }
+  }
+
+  function close() {
+    document.getElementById('admin-overlay').classList.remove('open');
+    // Re-enable page scroll
+    document.body.style.overflow = '';
+  }
+
+  function showPanel() {
+    document.getElementById('admin-login').style.display = 'none';
+    document.getElementById('admin-panel').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    loadPosts();
+    renderPostsList();
+    renderDynamicPosts();
+  }
+
+  // ── Auth ────────────────────────────────────────────────────
+  function login() {
+    var val = (document.getElementById('admin-pass-input').value || '').trim();
+    var err = document.getElementById('admin-login-error');
+    if (val === PASS) {
+      sessionStorage.setItem('ssc-admin-auth', '1');
+      document.getElementById('admin-pass-input').value = '';
+      err.textContent = '';
+      showPanel();
+    } else {
+      err.textContent = 'Incorrect passphrase.';
+      document.getElementById('admin-pass-input').value = '';
+      document.getElementById('admin-pass-input').focus();
+    }
+  }
+
+  // ── Tab switching ────────────────────────────────────────────
+  function switchTab(name) {
+    document.querySelectorAll('.admin-tab').forEach(function (t) { t.classList.remove('active'); });
+    document.querySelectorAll('.admin-tab-btn').forEach(function (b) { b.classList.remove('active'); });
+    var tab = document.getElementById('tab-' + name);
+    var btn = document.getElementById('tab-btn-' + name);
+    if (tab) tab.classList.add('active');
+    if (btn) btn.classList.add('active');
+    if (name === 'preview') buildPreview();
+    if (name === 'posts')   renderPostsList();
+  }
+
+  // ── Toolbar helpers ──────────────────────────────────────────
+  function wrap(before, after, mode) {
+    var ta = document.getElementById('admin-body');
+    var start = ta.selectionStart, end = ta.selectionEnd;
+    var sel   = ta.value.substring(start, end);
+    var replacement;
+    if (mode === 'heading' || mode === 'quote') {
+      replacement = before + (sel || 'Text here');
+    } else {
+      replacement = before + (sel || 'text') + after;
+    }
+    ta.value = ta.value.substring(0, start) + replacement + ta.value.substring(end);
+    ta.focus();
+    ta.selectionStart = start + before.length;
+    ta.selectionEnd   = start + replacement.length - after.length;
+  }
+
+  function insertBreak() {
+    var ta = document.getElementById('admin-body');
+    var pos = ta.selectionStart;
+    ta.value = ta.value.substring(0, pos) + '\n\n' + ta.value.substring(pos);
+    ta.selectionStart = ta.selectionEnd = pos + 2;
+    ta.focus();
+  }
+
+  // ── Markdown → HTML converter (lightweight) ─────────────────
+  function markdownToHtml(md) {
+    var lines  = (md || '').split('\n');
+    var html   = '';
+    var inPara = false;
+
+    function closePara() { if (inPara) { html += '</p>\n'; inPara = false; } }
+
+    lines.forEach(function (line) {
+      line = line
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        // Re-allow our own tags after escaping... use markers instead
+      ;
+      var trimmed = line.trim();
+
+      // Headings
+      if (/^#{1,3}\s/.test(trimmed)) {
+        closePara();
+        var text = trimmed.replace(/^#+\s/, '');
+        text = inlineFormat(text);
+        html += '<h3>' + text + '</h3>\n';
+        return;
+      }
+      // Blockquote
+      if (/^>\s/.test(trimmed)) {
+        closePara();
+        html += '<blockquote>' + inlineFormat(trimmed.slice(2)) + '</blockquote>\n';
+        return;
+      }
+      // Blank line — close para
+      if (!trimmed) {
+        closePara();
+        return;
+      }
+      // Regular text — open/extend para
+      if (!inPara) { html += '<p>'; inPara = true; }
+      else { html += ' '; }
+      html += inlineFormat(trimmed);
+    });
+    closePara();
+    return html;
+  }
+
+  function inlineFormat(text) {
+    return text
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>');
+  }
+
+  // ── Category badge ───────────────────────────────────────────
+  function categoryBadge(cat) {
+    var labels = { numerology: 'Numerology', philosophy: 'Philosophy', numbers: 'The Numbers', practice: 'Practice' };
+    var cls    = { philosophy: ' gold', numbers: ' teal', practice: ' rose' };
+    return '<span class="blog-tag' + (cls[cat] || '') + '">' + (labels[cat] || cat) + '</span>';
+  }
+
+  // Glyph per category
+  function categoryGlyph(cat) {
+    return { numerology: '&#9732;', philosophy: '&#10022;', numbers: '&#9651;', practice: '&#9998;' }[cat] || '&#10022;';
+  }
+
+  // ── Preview ──────────────────────────────────────────────────
+  function buildPreview() {
+    var title    = (document.getElementById('admin-title').value    || '').trim();
+    var category = document.getElementById('admin-category').value;
+    var date     = (document.getElementById('admin-date').value     || '').trim();
+    var body     = document.getElementById('admin-body').value;
+    var el       = document.getElementById('admin-preview-content');
+
+    if (!title && !body) {
+      el.innerHTML = '<div class="admin-empty">Fill in the Write tab to see a preview.</div>';
+      return;
+    }
+
+    var readTime = Math.max(1, Math.round(body.split(/\s+/).length / 200));
+
+    el.innerHTML =
+      '<div class="blog-post-eyebrow">' + categoryBadge(category) + '</div>' +
+      '<h1 class="preview-banner">' + (title || 'Untitled') + '</h1>' +
+      '<div class="preview-meta">' +
+        '<span class="blog-date">' + (date || 'Draft') + '</span>' +
+        '<span style="color:var(--text-muted)">&middot;</span>' +
+        '<span class="blog-date">' + readTime + ' min read</span>' +
+      '</div>' +
+      '<div class="preview-body">' + markdownToHtml(body) + '</div>';
+  }
+
+  // ── Publish ──────────────────────────────────────────────────
+  function publish() {
+    var title    = (document.getElementById('admin-title').value    || '').trim();
+    var category = document.getElementById('admin-category').value;
+    var date     = (document.getElementById('admin-date').value     || '').trim() || formatDate(new Date());
+    var excerpt  = (document.getElementById('admin-excerpt').value  || '').trim();
+    var body     = (document.getElementById('admin-body').value     || '').trim();
+    var idInput  = document.getElementById('admin-editing-id').value;
+
+    if (!title) { showToast('Please add a title first.'); return; }
+    if (!body)  { showToast('Please write some content.'); return; }
+
+    loadPosts();
+
+    if (idInput) {
+      // Edit existing
+      var idx = posts.findIndex(function (p) { return p.id === idInput; });
+      if (idx >= 0) {
+        posts[idx] = { id: idInput, title: title, category: category, date: date, excerpt: excerpt, body: body };
+      }
+    } else {
+      // New post
+      var id = 'dyn-' + Date.now();
+      posts.push({ id: id, title: title, category: category, date: date, excerpt: excerpt, body: body });
+    }
+
+    savePosts();
+    renderDynamicPosts();
+    renderPostsList();
+    clearForm();
+    showToast(idInput ? 'Post updated!' : 'Post published!');
+    switchTab('posts');
+  }
+
+  function formatDate(d) {
+    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    return months[d.getMonth()] + ' ' + d.getFullYear();
+  }
+
+  // ── Edit existing ────────────────────────────────────────────
+  function editPost(id) {
+    var post = posts.find(function (p) { return p.id === id; });
+    if (!post) return;
+    document.getElementById('admin-editing-id').value = id;
+    document.getElementById('admin-title').value    = post.title;
+    document.getElementById('admin-category').value = post.category;
+    document.getElementById('admin-date').value     = post.date;
+    document.getElementById('admin-excerpt').value  = post.excerpt || '';
+    document.getElementById('admin-body').value     = post.body;
+    switchTab('write');
+  }
+
+  // ── Delete ───────────────────────────────────────────────────
+  function deletePost(id) {
+    if (!confirm('Delete this post? This cannot be undone.')) return;
+    posts = posts.filter(function (p) { return p.id !== id; });
+    savePosts();
+    renderDynamicPosts();
+    renderPostsList();
+    showToast('Post deleted.');
+  }
+
+  // ── Clear form ───────────────────────────────────────────────
+  function clearForm() {
+    document.getElementById('admin-editing-id').value = '';
+    document.getElementById('admin-title').value    = '';
+    document.getElementById('admin-category').value = 'numerology';
+    document.getElementById('admin-date').value     = '';
+    document.getElementById('admin-excerpt').value  = '';
+    document.getElementById('admin-body').value     = '';
+    editingId = null;
+  }
+
+  // ── Render dynamic posts into blog listing ───────────────────
+  function renderDynamicPosts() {
+    // Remove any previously injected dynamic cards + post articles
+    document.querySelectorAll('.dyn-blog-card, .dyn-blog-post').forEach(function (el) { el.remove(); });
+
+    var grid = document.getElementById('blog-grid');
+    if (!grid) return;
+
+    posts.forEach(function (post) {
+      // Card
+      var card = document.createElement('div');
+      card.className = 'blog-card dyn-blog-card';
+      card.setAttribute('data-category', post.category);
+      card.onclick = function () { openDynPost(post.id); };
+      card.innerHTML =
+        '<div class="blog-card-banner" style="height:120px">' +
+          '<div class="blog-card-glyph" style="font-size:38px">' + categoryGlyph(post.category) + '</div>' +
+        '</div>' +
+        '<div class="blog-card-body">' +
+          '<div class="blog-card-meta">' + categoryBadge(post.category) + '<span class="blog-date">' + post.date + '</span></div>' +
+          '<div class="blog-card-title">' + escHtml(post.title) + '</div>' +
+          (post.excerpt ? '<p class="blog-card-excerpt">' + escHtml(post.excerpt) + '</p>' : '') +
+          '<div class="blog-read-more">Read Article &#8594;</div>' +
+        '</div>';
+      grid.appendChild(card);
+
+      // Full post article
+      var article = document.createElement('div');
+      article.className = 'blog-post dyn-blog-post';
+      article.id = 'dyn-post-' + post.id;
+      var readTime = Math.max(1, Math.round(post.body.split(/\s+/).length / 200));
+      article.innerHTML =
+        '<button class="blog-post-back" onclick="closePosts()">&#8592; Back to Blog</button>' +
+        '<div class="blog-post-eyebrow">' + categoryBadge(post.category) + '</div>' +
+        '<h1 class="blog-post-title">' + escHtml(post.title) + '</h1>' +
+        '<div class="blog-post-meta">' + escHtml(post.date) + ' &middot; ' + readTime + ' min read</div>' +
+        '<div class="blog-post-content">' + markdownToHtml(post.body) + '</div>';
+      document.getElementById('page-blog').appendChild(article);
+    });
+  }
+
+  function openDynPost(id) {
+    document.getElementById('blog-listing').style.display = 'none';
+    document.querySelectorAll('.blog-post').forEach(function (p) { p.classList.remove('active'); });
+    var post = document.getElementById('dyn-post-' + id);
+    if (post) { post.classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  }
+
+  // ── Render posts list in admin ───────────────────────────────
+  function renderPostsList() {
+    var container = document.getElementById('admin-posts-list-inner');
+    if (!container) return;
+    if (!posts.length) {
+      container.innerHTML = '<div class="admin-empty">No dynamic posts yet. Write one!</div>';
+      return;
+    }
+    container.innerHTML = posts.slice().reverse().map(function (post) {
+      return (
+        '<div class="admin-post-item">' +
+          '<div class="admin-post-info">' +
+            '<div class="admin-post-title">' + escHtml(post.title) + '</div>' +
+            '<div class="admin-post-meta">' + categoryBadge(post.category) + ' &nbsp;' + escHtml(post.date) + '</div>' +
+          '</div>' +
+          '<div class="admin-post-btns">' +
+            '<button class="admin-post-edit"   onclick="adminSystem.editPost(\'' + post.id + '\')">Edit</button>' +
+            '<button class="admin-post-delete" onclick="adminSystem.deletePost(\'' + post.id + '\')">Delete</button>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  // ── Toast ────────────────────────────────────────────────────
+  function showToast(msg) {
+    var t = document.getElementById('admin-toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function () { t.classList.remove('show'); }, 2800);
+  }
+
+  // ── Escape HTML ──────────────────────────────────────────────
+  function escHtml(s) {
+    return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Boot ─────────────────────────────────────────────────────
+  function boot() {
+    // Load and render any stored posts immediately
+    loadPosts();
+    if (posts.length) renderDynamicPosts();
+
+    // Keyboard shortcut: Ctrl+Shift+A
+    document.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') { e.preventDefault(); open(); }
+    });
+
+    // Hash trigger: navigate to #admin
+    function checkHash() {
+      if (window.location.hash === '#admin') {
+        window.location.hash = '';
+        open();
+      }
+    }
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
+
+    // Hidden trigger button (click 5 times fast)
+    var triggerClicks = 0, triggerTimer = null;
+    var trigger = document.getElementById('admin-trigger');
+    if (trigger) {
+      trigger.addEventListener('click', function () {
+        triggerClicks++;
+        clearTimeout(triggerTimer);
+        if (triggerClicks >= 5) { triggerClicks = 0; open(); }
+        else { triggerTimer = setTimeout(function () { triggerClicks = 0; }, 1200); }
+      });
+    }
+
+    // Close on overlay background click
+    document.getElementById('admin-overlay').addEventListener('click', function (e) {
+      if (e.target === this) close();
+    });
+  }
+
+  // ── Public API ─────────────────────────────────────────────
+  return {
+    open:       open,
+    close:      close,
+    login:      login,
+    switchTab:  switchTab,
+    wrap:       wrap,
+    insertBreak:insertBreak,
+    publish:    publish,
+    editPost:   editPost,
+    deletePost: deletePost,
+    clearForm:  clearForm,
+    buildPreview: buildPreview,
+    exportCode: exportCode,
+    boot:       boot,
+  };
+
+  // ── Export code ──────────────────────────────────────────────
+  function exportCode() {
+    loadPosts();
+    if (!posts.length) { showToast('No dynamic posts to export yet.'); return; }
+
+    var cardsHtml = posts.map(function(post) {
+      var readTime = Math.max(1, Math.round(post.body.split(/\s+/).length / 200));
+      var labels = { numerology: 'Numerology', philosophy: 'Philosophy', numbers: 'The Numbers', practice: 'Practice' };
+      var cls    = { philosophy: ' gold', numbers: ' teal', practice: ' rose' };
+      var glyph  = { numerology: '&#9732;', philosophy: '&#10022;', numbers: '&#9651;', practice: '&#9998;' }[post.category] || '&#10022;';
+      return (
+        '<div class="blog-card" onclick="openPost('' + post.id + '')" data-category="' + post.category + '">
+' +
+        '  <div class="blog-card-banner" style="height:120px"><div class="blog-card-glyph" style="font-size:38px">' + glyph + '</div></div>
+' +
+        '  <div class="blog-card-body">
+' +
+        '    <div class="blog-card-meta"><span class="blog-tag' + (cls[post.category]||'') + '">' + (labels[post.category]||post.category) + '</span><span class="blog-date">' + escHtml(post.date) + '</span></div>
+' +
+        '    <div class="blog-card-title">' + escHtml(post.title) + '</div>
+' +
+        '    ' + (post.excerpt ? '<p class="blog-card-excerpt">' + escHtml(post.excerpt) + '</p>
+' : '') +
+        '    <div class="blog-read-more">Read Article &#8594;</div>
+' +
+        '  </div>
+' +
+        '</div>'
+      );
+    }).join('
+');
+
+    var postsHtml = posts.map(function(post) {
+      var readTime = Math.max(1, Math.round(post.body.split(/\s+/).length / 200));
+      var labels = { numerology: 'Numerology', philosophy: 'Philosophy', numbers: 'The Numbers', practice: 'Practice' };
+      var cls    = { philosophy: ' gold', numbers: ' teal', practice: ' rose' };
+      return (
+        '<div class="blog-post" id="' + post.id + '">
+' +
+        '  <button class="blog-post-back" onclick="closePosts()">&#8592; Back to Blog</button>
+' +
+        '  <div class="blog-post-eyebrow"><span class="blog-tag' + (cls[post.category]||'') + '">' + (labels[post.category]||post.category) + '</span></div>
+' +
+        '  <h1 class="blog-post-title">' + escHtml(post.title) + '</h1>
+' +
+        '  <div class="blog-post-meta">' + escHtml(post.date) + ' &middot; ' + readTime + ' min read</div>
+' +
+        '  <div class="blog-post-content">
+    ' + markdownToHtml(post.body).replace(/
+/g,'
+    ') + '
+  </div>
+' +
+        '</div>'
+      );
+    }).join('
+
+');
+
+    var out = '<!-- PASTE CARDS into #blog-grid -->
+' + cardsHtml + '
+
+<!-- PASTE POSTS before </div><!-- /page-blog --> -->
+' + postsHtml;
+
+    var ta = document.getElementById('admin-export-output');
+    ta.value = out;
+    switchTab('export');
+    showToast('Code ready — copy and paste into your index.html');
+  }
+
+})(); // end adminSystem IIFE
+
+// ── Init admin after DOM ready ──────────────────────────────────
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function(){ adminSystem.boot(); });
+} else {
+  adminSystem.boot();
+}
+
 </script>
+
+<!-- ════════════════════════════════════════════════════════════
+     ADMIN OVERLAY — Blog CMS
+     Trigger: Ctrl+Shift+A  |  or navigate to #admin
+     Password: ssc2025  (change PASS in the JS above)
+════════════════════════════════════════════════════════════ -->
+
+<!-- Hidden trigger in footer copyright (click 5×) -->
+<span id="admin-trigger" style="cursor:default;user-select:none">&#169;</span>
+
+<div id="admin-toast"></div>
+
+<div id="admin-overlay">
+
+  <!-- Login screen -->
+  <div id="admin-login">
+    <div id="admin-login-box">
+      <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.4em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:6px">Simulation Source Code</div>
+      <div style="font-family:'Cinzel',serif;font-size:18px;color:var(--gold);margin-bottom:28px">Admin</div>
+      <input id="admin-pass-input" type="password" placeholder="Passphrase" autocomplete="off"
+        style="width:100%;padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:'EB Garamond',serif;font-size:16px;outline:none;margin-bottom:10px"
+        onkeydown="if(event.key==='Enter') adminSystem.login()">
+      <div id="admin-login-error" style="color:#e06060;font-size:13px;min-height:18px;margin-bottom:14px"></div>
+      <button onclick="adminSystem.login()" style="width:100%;padding:12px;background:var(--gold);color:#0a0800;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.2em;border:none;border-radius:4px;cursor:pointer">Enter</button>
+      <button onclick="adminSystem.close()" style="display:block;margin:14px auto 0;background:none;border:none;color:var(--text-dim);font-size:13px;cursor:pointer;font-family:'EB Garamond',serif">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Admin panel -->
+  <div id="admin-panel">
+    <div id="admin-header">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.3em;color:var(--gold);text-transform:uppercase">&#10022; SSC Admin</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="admin-tab-btn active" id="tab-btn-write"  onclick="adminSystem.switchTab('write')">Write</button>
+        <button class="admin-tab-btn"        id="tab-btn-preview" onclick="adminSystem.switchTab('preview')">Preview</button>
+        <button class="admin-tab-btn"        id="tab-btn-posts"  onclick="adminSystem.switchTab('posts')">Posts</button>
+        <button class="admin-tab-btn"        id="tab-btn-export" onclick="adminSystem.switchTab('export')">Export</button>
+        <button onclick="adminSystem.close()" style="margin-left:8px;background:none;border:1px solid rgba(255,255,255,.12);color:var(--text-dim);border-radius:4px;padding:6px 12px;cursor:pointer;font-size:13px">&#10005;</button>
+      </div>
+    </div>
+
+    <!-- TAB: Write -->
+    <div class="admin-tab active" id="tab-write">
+      <input type="hidden" id="admin-editing-id">
+      <div id="admin-fields">
+        <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;margin-bottom:12px">
+          <input id="admin-title" type="text" placeholder="Post title…" autocomplete="off">
+          <select id="admin-category">
+            <option value="numerology">Numerology</option>
+            <option value="philosophy">Philosophy</option>
+            <option value="numbers">The Numbers</option>
+            <option value="practice">Practice</option>
+          </select>
+          <input id="admin-date" type="text" placeholder="Month YYYY" style="width:130px" autocomplete="off">
+        </div>
+        <input id="admin-excerpt" type="text" placeholder="Short excerpt for the card (optional)…" autocomplete="off" style="width:100%;margin-bottom:12px">
+        <div id="admin-toolbar">
+          <button title="Heading"    onclick="adminSystem.wrap('### ','','heading')"><b>H</b></button>
+          <button title="Bold"       onclick="adminSystem.wrap('**','**')"><b>B</b></button>
+          <button title="Italic"     onclick="adminSystem.wrap('*','*')"><em>I</em></button>
+          <button title="Blockquote" onclick="adminSystem.wrap('> ','','quote')">&#8220;&#8221;</button>
+          <button title="Paragraph break" onclick="adminSystem.insertBreak()">&#182;</button>
+        </div>
+        <textarea id="admin-body" placeholder="Write your post here. Use ### for headings, **bold**, *italic*, and > for blockquotes.&#10;&#10;A blank line starts a new paragraph."></textarea>
+      </div>
+      <div id="admin-actions">
+        <button class="admin-btn-ghost" onclick="adminSystem.clearForm()">Clear</button>
+        <button class="admin-btn-primary" onclick="adminSystem.publish()">Publish Post</button>
+      </div>
+    </div>
+
+    <!-- TAB: Preview -->
+    <div class="admin-tab" id="tab-preview">
+      <div id="admin-preview-content" style="max-width:700px;margin:0 auto;padding:40px 0">
+        <div class="admin-empty">Fill in the Write tab to see a preview.</div>
+      </div>
+    </div>
+
+    <!-- TAB: Posts -->
+    <div class="admin-tab" id="tab-posts">
+      <div id="admin-posts-list-inner" style="padding:24px 0"></div>
+    </div>
+
+    <!-- TAB: Export -->
+    <div class="admin-tab" id="tab-export">
+      <div style="padding:24px 0">
+        <p style="color:var(--text-dim);font-size:14px;margin-bottom:16px">Copy this code and paste it into your <code style="color:var(--gold);font-size:12px">index.html</code> to make posts permanent — cards into <code style="color:var(--gold);font-size:12px">#blog-grid</code>, posts before the closing blog div.</p>
+        <button class="admin-btn-primary" onclick="adminSystem.exportCode()" style="margin-bottom:16px">&#8635; Generate Export Code</button>
+        <textarea id="admin-export-output" readonly style="height:420px;font-size:11px;font-family:'Courier New',monospace;color:var(--teal-light)" placeholder="Click Generate to produce the HTML code for your posts…"></textarea>
+      </div>
+    </div>
+
+  </div><!-- /admin-panel -->
+</div><!-- /admin-overlay -->
+
 </body>
 </html>
