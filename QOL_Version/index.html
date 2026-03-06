@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOURCE CODE: LIFE — The Simulation RPG</title>
+<meta name="description" content="Decode the numerological frequencies written into your birth name and date. SOURCE CODE: LIFE is a simulation RPG that reveals your 7 core frequencies as quests, stats, and a living character journal.">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg-deep:      #050508;
+  --bg-panel:     #0b0b14;
+  --bg-panel2:    #0f0f1c;
+  --bg-inset:     #07070f;
+  --border:       #1c1c38;
+  --border-glow:  #252550;
+  --gold:         #d4a843;
+  --gold-bright:  #f0c060;
+  --gold-dim:     #6b5220;
+  --gold-muted:   #382b10;
+  --teal:         #00e5cc;
+  --teal-dim:     #007a6e;
+  --teal-muted:   #00332e;
+  --purple:       #a070ff;
+  --purple-dim:   #4a2d99;
+  --rose:         #ff5580;
+  --amber:        #ff9930;
+  --amber-dim:    #7a4400;
+  --sage:         #60d080;
+  --sage-dim:     #1e6030;
+  --silver:       #90a8c8;
+  --silver-dim:   #384858;
+  --text:         #c8d8f0;
+  --text-dim:     #50687a;
+  --text-mid:     #8898a8;
+  --white:        #e8f0ff;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Share Tech Mono', monospace;
+  background: var(--bg-deep);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* CRT & vignette */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom, transparent 0px, transparent 3px,
+    rgba(0,0,0,0.10) 3px, rgba(0,0,0,0.10) 4px
+  );
+  pointer-events: none;
+  z-index: 9000;
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,0.65) 100%);
+  pointer-events: none;
+  z-index: 9001;
+}
+
+* { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect x='0' y='0' width='6' height='6' fill='%2300e5cc'/%3E%3C/svg%3E") 3 3, auto; }
+a { cursor: pointer; }
+
+/* ── SCANLINE ── */
+.scanline {
+  position: fixed;
+  top: -4px; left: 0; right: 0; height: 4px;
+  background: linear-gradient(to bottom, transparent, rgba(0,229,204,0.06), transparent);
+  pointer-events: none;
+  z-index: 9002;
+  animation: scanDown 10s linear infinite;
+}
+@keyframes scanDown { from { top: -4px; } to { top: 100vh; } }
+
+/* ── NAV ── */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  padding: 16px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(180deg, rgba(5,5,8,0.95) 0%, rgba(5,5,8,0) 100%);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+}
+.nav.scrolled {
+  background: rgba(5,5,8,0.96);
+  border-bottom-color: var(--border);
+  backdrop-filter: blur(10px);
+}
+.nav-logo {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--teal);
+  text-shadow: 0 0 16px rgba(0,229,204,0.5);
+  letter-spacing: 2px;
+  text-decoration: none;
+  animation: flicker 7s infinite;
+}
+@keyframes flicker {
+  0%,89%,91%,95%,100% { opacity: 1; }
+  90%,94% { opacity: 0.65; }
+  92% { opacity: 0.9; }
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  list-style: none;
+}
+.nav-links a {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  color: var(--text-dim);
+  text-decoration: none;
+  letter-spacing: 2px;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--teal); }
+.nav-cta {
+  background: transparent;
+  border: 1px solid var(--teal-dim);
+  color: var(--teal) !important;
+  padding: 8px 16px;
+  transition: all 0.2s !important;
+  box-shadow: 0 0 16px rgba(0,229,204,0.05);
+}
+.nav-cta:hover {
+  border-color: var(--teal) !important;
+  box-shadow: 0 0 24px rgba(0,229,204,0.15) !important;
+}
+
+@media (max-width: 640px) {
+  .nav { padding: 14px 20px; }
+  .nav-links { gap: 16px; }
+  .nav-links li:not(:last-child) { display: none; }
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* animated grid background */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,229,204,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,204,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridDrift 40s linear infinite;
+  pointer-events: none;
+}
+@keyframes gridDrift {
+  from { background-position: 0 0; }
+  to   { background-position: 60px 60px; }
+}
+
+/* corner decorations */
+.hero-corner {
+  position: absolute;
+  width: 60px; height: 60px;
+  border-color: var(--teal-dim);
+  border-style: solid;
+  opacity: 0.5;
+}
+.hero-corner.tl { top: 80px; left: 40px; border-width: 2px 0 0 2px; }
+.hero-corner.tr { top: 80px; right: 40px; border-width: 2px 2px 0 0; }
+.hero-corner.bl { bottom: 60px; left: 40px; border-width: 0 0 2px 2px; }
+.hero-corner.br { bottom: 60px; right: 40px; border-width: 0 2px 2px 0; }
+
+.hero-eyebrow {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: var(--teal);
+  letter-spacing: 4px;
+  margin-bottom: 22px;
+  text-shadow: 0 0 20px rgba(0,229,204,0.4);
+  opacity: 0;
+  animation: riseIn 0.7s 0.1s ease forwards;
+}
+.hero-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(20px, 5vw, 42px);
+  color: var(--white);
+  line-height: 1.5;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  text-shadow: 0 0 40px rgba(0,229,204,0.12);
+  opacity: 0;
+  animation: riseIn 0.7s 0.2s ease forwards;
+}
+.hero-title span { color: var(--teal); text-shadow: 0 0 24px rgba(0,229,204,0.6); }
+.hero-subtitle {
+  font-family: 'VT323', monospace;
+  font-size: clamp(20px, 3.5vw, 30px);
+  color: var(--text-dim);
+  letter-spacing: 6px;
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: riseIn 0.7s 0.3s ease forwards;
+}
+.hero-desc {
+  max-width: 540px;
+  font-size: clamp(12px, 1.5vw, 14px);
+  color: var(--text-mid);
+  line-height: 2;
+  margin-bottom: 44px;
+  opacity: 0;
+  animation: riseIn 0.7s 0.4s ease forwards;
+}
+.hero-cta-group {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  opacity: 0;
+  animation: riseIn 0.7s 0.55s ease forwards;
+}
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.btn-primary-hero {
+  background: transparent;
+  border: 2px solid var(--teal-dim);
+  color: var(--teal);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  letter-spacing: 2px;
+  padding: 16px 28px;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  text-shadow: 0 0 10px rgba(0,229,204,0.4);
+  box-shadow: 0 0 30px rgba(0,229,204,0.07), inset 0 0 20px rgba(0,229,204,0.03);
+}
+.btn-primary-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(0,229,204,0.07));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.btn-primary-hero:hover {
+  border-color: var(--teal);
+  box-shadow: 0 0 50px rgba(0,229,204,0.18), inset 0 0 30px rgba(0,229,204,0.06);
+}
+.btn-primary-hero:hover::before { opacity: 1; }
+
+.btn-secondary-hero {
+  background: transparent;
+  border: 1px solid var(--border-glow);
+  color: var(--text-mid);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  letter-spacing: 2px;
+  padding: 16px 28px;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s;
+}
+.btn-secondary-hero:hover { border-color: var(--silver-dim); color: var(--silver); }
+
+/* ── MARQUEE ── */
+.marquee-wrap {
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-inset);
+  padding: 10px 0;
+}
+.marquee-track {
+  display: flex;
+  gap: 0;
+  white-space: nowrap;
+  animation: marqueeScroll 30s linear infinite;
+}
+@keyframes marqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee-item {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  color: var(--text-dim);
+  letter-spacing: 3px;
+  padding: 0 24px;
+}
+.marquee-item span { color: var(--teal); opacity: 0.5; margin-right: 24px; }
+
+/* ── SECTION SHARED ── */
+.section {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 100px 40px;
+}
+.section-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  color: var(--teal);
+  letter-spacing: 4px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  max-width: 60px;
+  background: linear-gradient(90deg, var(--teal-dim), transparent);
+}
+.section-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(14px, 2.5vw, 22px);
+  color: var(--white);
+  line-height: 1.7;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+.section-title span { color: var(--gold); }
+.section-body {
+  font-size: 13px;
+  color: var(--text-mid);
+  line-height: 2.1;
+  max-width: 680px;
+}
+
+@media (max-width: 640px) {
+  .section { padding: 70px 20px; }
+}
+
+/* ── HOW IT WORKS ── */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 50px;
+}
+.step-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  padding: 24px 22px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.step-card:hover { border-color: var(--border-glow); }
+.step-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255,255,255,0.02);
+  pointer-events: none;
+}
+.step-num {
+  font-family: 'VT323', monospace;
+  font-size: 56px;
+  line-height: 1;
+  margin-bottom: 14px;
+  text-shadow: 0 0 14px currentColor;
+}
+.step-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  line-height: 1.7;
+}
+.step-body {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.9;
+}
+
+/* ── FREQUENCIES SHOWCASE ── */
+.freq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-top: 44px;
+}
+.freq-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  padding: 18px 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+.freq-card:hover {
+  border-color: var(--border-glow);
+}
+.freq-accent {
+  width: 100%;
+  height: 2px;
+  margin-bottom: 14px;
+  position: relative;
+}
+.freq-accent::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  opacity: 0.4;
+  filter: blur(4px);
+  background: inherit;
+}
+.freq-num {
+  font-family: 'VT323', monospace;
+  font-size: 42px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.freq-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+  line-height: 1.6;
+}
+.freq-role {
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+/* ── SCREENSHOTS / MOCKUP ── */
+.mockup-section {
+  background: var(--bg-inset);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 80px 40px;
+}
+.mockup-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+@media (max-width: 720px) {
+  .mockup-inner { grid-template-columns: 1fr; gap: 40px; }
+  .mockup-section { padding: 60px 20px; }
+}
+.mockup-text .section-label { margin-bottom: 14px; }
+.mockup-terminal {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-glow);
+  position: relative;
+  box-shadow: 0 0 60px rgba(0,229,204,0.05);
+}
+.mockup-terminal::before, .mockup-terminal::after {
+  content: '';
+  position: absolute;
+  width: 10px; height: 10px;
+  border-color: var(--teal);
+  border-style: solid;
+}
+.mockup-terminal::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+.mockup-terminal::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+.terminal-bar {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.terminal-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+}
+.terminal-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 5px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  margin-left: 4px;
+}
+.terminal-body { padding: 20px; }
+.terminal-line {
+  font-size: 11px;
+  line-height: 2.2;
+  display: flex;
+  gap: 10px;
+}
+.terminal-line .prompt { color: var(--teal-dim); flex-shrink: 0; }
+.terminal-line .val    { color: var(--teal); }
+.terminal-line .dim    { color: var(--text-dim); }
+.terminal-line .gold   { color: var(--gold); }
+.terminal-line .purple { color: var(--purple); }
+.terminal-line .rose   { color: var(--rose); }
+.terminal-line .amber  { color: var(--amber); }
+.terminal-line .sage   { color: var(--sage); }
+.terminal-cursor {
+  display: inline-block;
+  background: var(--teal);
+  width: 8px; height: 13px;
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ── FEATURES ── */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 50px;
+}
+.feature-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  padding: 26px 22px;
+  transition: border-color 0.2s;
+}
+.feature-card:hover { border-color: var(--border-glow); }
+.feature-icon {
+  font-family: 'VT323', monospace;
+  font-size: 38px;
+  margin-bottom: 14px;
+  line-height: 1;
+}
+.feature-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  line-height: 1.7;
+  color: var(--white);
+}
+.feature-body {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 2;
+}
+
+/* ── CTA SECTION ── */
+.cta-section {
+  text-align: center;
+  padding: 120px 40px;
+  position: relative;
+  overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 600px; height: 300px;
+  background: radial-gradient(ellipse, rgba(0,229,204,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-inner { position: relative; z-index: 1; }
+.cta-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(14px, 3vw, 24px);
+  color: var(--white);
+  line-height: 1.8;
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+}
+.cta-title span { color: var(--teal); }
+.cta-sub {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 40px;
+  letter-spacing: 2px;
+}
+.cta-divider {
+  width: 60px; height: 1px;
+  background: var(--teal-dim);
+  margin: 24px auto 40px;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--bg-inset);
+  border-top: 1px solid var(--border);
+  padding: 40px;
+}
+.footer-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.footer-logo {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: var(--teal);
+  letter-spacing: 2px;
+  opacity: 0.6;
+}
+.footer-links {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+}
+.footer-links a {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 5px;
+  color: var(--text-dim);
+  text-decoration: none;
+  letter-spacing: 2px;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--teal); }
+.footer-copy {
+  font-size: 9px;
+  color: var(--text-dim);
+  opacity: 0.5;
+}
+@media (max-width: 640px) {
+  footer { padding: 30px 20px; }
+  .footer-inner { flex-direction: column; align-items: flex-start; gap: 14px; }
+}
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+
+<!-- NAV -->
+<nav class="nav" id="mainNav">
+  <a class="nav-logo" href="index.html">◈ SOURCE CODE: LIFE</a>
+  <ul class="nav-links">
+    <li><a href="#how-it-works">HOW IT WORKS</a></li>
+    <li><a href="#frequencies">FREQUENCIES</a></li>
+    <li><a href="privacy.html">PRIVACY</a></li>
+    <li><a href="app.html" class="nav-cta">▶ LAUNCH APP</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-corner tl"></div>
+  <div class="hero-corner tr"></div>
+  <div class="hero-corner bl"></div>
+  <div class="hero-corner br"></div>
+
+  <div class="hero-eyebrow">◈ THE SIMULATION RPG</div>
+  <h1 class="hero-title">SOURCE CODE:<br><span>LIFE</span></h1>
+  <div class="hero-subtitle">DECODE YOUR FREQUENCIES</div>
+  <p class="hero-desc">
+    Your birth name and date are not random. They encode 7 core numerological frequencies — a hidden operating system that shapes how you think, love, create, and lead. This app reads that code and turns it into a playable RPG.
+  </p>
+  <div class="hero-cta-group">
+    <a href="app.html" class="btn-primary-hero">▶ ENTER THE SIMULATION</a>
+    <a href="#how-it-works" class="btn-secondary-hero">◇ HOW IT WORKS</a>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <!-- repeated twice for seamless loop -->
+    <span class="marquee-item"><span>◈</span>LIFE PATH</span>
+    <span class="marquee-item"><span>◈</span>EXPRESSION</span>
+    <span class="marquee-item"><span>◈</span>SOUL URGE</span>
+    <span class="marquee-item"><span>◈</span>OUTER PERSONA</span>
+    <span class="marquee-item"><span>◈</span>ACHIEVEMENT</span>
+    <span class="marquee-item"><span>◈</span>LIFE CALLING</span>
+    <span class="marquee-item"><span>◈</span>THEME NUMBER</span>
+    <span class="marquee-item"><span>◈</span>MASTER NUMBERS</span>
+    <span class="marquee-item"><span>◈</span>QUEST ENGINE</span>
+    <span class="marquee-item"><span>◈</span>STAT CHARTS</span>
+    <span class="marquee-item"><span>◈</span>NUMEROLOGY</span>
+    <span class="marquee-item"><span>◈</span>LIFE PATH</span>
+    <span class="marquee-item"><span>◈</span>EXPRESSION</span>
+    <span class="marquee-item"><span>◈</span>SOUL URGE</span>
+    <span class="marquee-item"><span>◈</span>OUTER PERSONA</span>
+    <span class="marquee-item"><span>◈</span>ACHIEVEMENT</span>
+    <span class="marquee-item"><span>◈</span>LIFE CALLING</span>
+    <span class="marquee-item"><span>◈</span>THEME NUMBER</span>
+    <span class="marquee-item"><span>◈</span>MASTER NUMBERS</span>
+    <span class="marquee-item"><span>◈</span>QUEST ENGINE</span>
+    <span class="marquee-item"><span>◈</span>STAT CHARTS</span>
+    <span class="marquee-item"><span>◈</span>NUMEROLOGY</span>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how-it-works">
+  <div class="section-label">◈ TUTORIAL</div>
+  <h2 class="section-title">How the <span>Simulation</span> Works</h2>
+  <p class="section-body">
+    Numerology maps every letter and every digit to a number. When those numbers are calculated, reduced, and read together, they form a frequency profile unique to you. SOURCE CODE: LIFE automates all of it — and wraps the results in an RPG interface that makes the meaning genuinely actionable.
+  </p>
+
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num" style="color:var(--teal)">01</div>
+      <div class="step-title" style="color:var(--teal)">CREATE YOUR CHARACTER</div>
+      <div class="step-body">Sign in and enter your full birth name (as it appears on your birth certificate) and your date of birth. These are the only two inputs the engine needs.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="color:var(--gold)">02</div>
+      <div class="step-title" style="color:var(--gold)">CALCULATE FREQUENCIES</div>
+      <div class="step-body">The engine computes your 7 core frequencies — Life Path, Expression, Life Calling, Soul, Outer, Achievement, and Theme — using classical numerology methods.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="color:var(--purple)">03</div>
+      <div class="step-title" style="color:var(--purple)">READ YOUR JOURNAL</div>
+      <div class="step-body">Each frequency unlocks a detailed journal entry covering its meaning — what it is asking you to learn, express, desire, project, accomplish, and ultimately become.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="color:var(--rose)">04</div>
+      <div class="step-title" style="color:var(--rose)">ACCEPT YOUR QUESTS</div>
+      <div class="step-body">Your frequencies generate a full quest log — a Main Quest (Life Calling), secondary Life Quests, Side Quests, and bonus Abundance Quests. Each includes real-world objectives.</div>
+    </div>
+  </div>
+</section>
+
+<!-- MOCKUP -->
+<div class="mockup-section">
+  <div class="mockup-inner">
+    <div class="mockup-text">
+      <div class="section-label">◈ LIVE PREVIEW</div>
+      <h2 class="section-title" style="font-size:clamp(13px,2vw,18px)">Your data. Calculated<br>in real time.</h2>
+      <p class="section-body" style="font-size:12px;margin-bottom:28px;">
+        Everything is computed in your browser from two inputs. No external APIs. No black-box models. You can see exactly how every frequency is derived — open source, fully transparent.
+      </p>
+      <a href="app.html" class="btn-primary-hero" style="font-size:7px;padding:13px 22px;">▶ TRY IT NOW</a>
+    </div>
+    <div class="mockup-terminal">
+      <div class="terminal-bar">
+        <div class="terminal-dot" style="background:#ff5580;"></div>
+        <div class="terminal-dot" style="background:#ff9930;"></div>
+        <div class="terminal-dot" style="background:#60d080;"></div>
+        <div class="terminal-title">FREQUENCY CALCULATION — LIVE</div>
+      </div>
+      <div class="terminal-body">
+        <div class="terminal-line"><span class="prompt">◈</span><span class="dim">INPUT NAME ........</span><span class="val">LOADING</span></div>
+        <div class="terminal-line"><span class="prompt">◈</span><span class="dim">INPUT DOB .........</span><span class="val">LOADING</span></div>
+        <div class="terminal-line" style="margin-top:6px;"><span class="prompt">→</span><span class="dim">LIFE PATH .........</span><span class="gold">7</span></div>
+        <div class="terminal-line"><span class="prompt">→</span><span class="dim">EXPRESSION ........</span><span class="purple">11/2</span></div>
+        <div class="terminal-line"><span class="prompt">→</span><span class="dim">LIFE CALLING ......</span><span class="val">9</span></div>
+        <div class="terminal-line"><span class="prompt">→</span><span class="dim">SOUL ..............</span><span class="rose">3</span></div>
+        <div class="terminal-line"><span class="prompt">→</span><span class="dim">OUTER .............</span><span class="amber">8</span></div>
+        <div class="terminal-line"><span class="prompt">→</span><span class="dim">ACHIEVEMENT .......</span><span class="val">5</span></div>
+        <div class="terminal-line"><span class="prompt">→</span><span class="dim">THEME .............</span><span class="sage">4</span></div>
+        <div class="terminal-line" style="margin-top:6px;"><span class="prompt">◈</span><span class="dim">STATUS ............</span><span class="val">READY<span class="terminal-cursor"></span></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FREQUENCIES -->
+<section class="section" id="frequencies">
+  <div class="section-label">◈ STAT SHEET</div>
+  <h2 class="section-title">Your 7 Core <span>Frequencies</span></h2>
+  <p class="section-body">
+    Each frequency is computed from a different slice of your birth data and tells a different part of your story. Together, they form a complete character sheet for the simulation called your life.
+  </p>
+
+  <div class="freq-grid">
+    <div class="freq-card">
+      <div class="freq-accent" style="background:var(--gold);"></div>
+      <div class="freq-num" style="color:var(--gold);">LP</div>
+      <div class="freq-title" style="color:var(--gold);">LIFE PATH</div>
+      <div class="freq-role">What you are here to learn. Derived from your full date of birth.</div>
+    </div>
+    <div class="freq-card">
+      <div class="freq-accent" style="background:var(--purple);"></div>
+      <div class="freq-num" style="color:var(--purple);">EX</div>
+      <div class="freq-title" style="color:var(--purple);">EXPRESSION</div>
+      <div class="freq-role">What you naturally carry and project. Derived from all letters of your full birth name.</div>
+    </div>
+    <div class="freq-card">
+      <div class="freq-accent" style="background:var(--teal);"></div>
+      <div class="freq-num" style="color:var(--teal);">CL</div>
+      <div class="freq-title" style="color:var(--teal);">LIFE CALLING</div>
+      <div class="freq-role">Your primary mission. Derived by combining Expression and Life Path.</div>
+    </div>
+    <div class="freq-card">
+      <div class="freq-accent" style="background:var(--rose);"></div>
+      <div class="freq-num" style="color:var(--rose);">SO</div>
+      <div class="freq-title" style="color:var(--rose);">SOUL URGE</div>
+      <div class="freq-role">Your inner desire. Derived from only the vowels in your birth name.</div>
+    </div>
+    <div class="freq-card">
+      <div class="freq-accent" style="background:var(--sage);"></div>
+      <div class="freq-num" style="color:var(--sage);">OU</div>
+      <div class="freq-title" style="color:var(--sage);">OUTER PERSONA</div>
+      <div class="freq-role">How others perceive you. Derived from only the consonants in your birth name.</div>
+    </div>
+    <div class="freq-card">
+      <div class="freq-accent" style="background:var(--amber);"></div>
+      <div class="freq-num" style="color:var(--amber);">AC</div>
+      <div class="freq-title" style="color:var(--amber);">ACHIEVEMENT</div>
+      <div class="freq-role">How you accomplish. Derived from your birth month and day.</div>
+    </div>
+    <div class="freq-card">
+      <div class="freq-accent" style="background:var(--silver);"></div>
+      <div class="freq-num" style="color:var(--silver);">TH</div>
+      <div class="freq-title" style="color:var(--silver);">THEME</div>
+      <div class="freq-role">Your life's overarching curriculum. Derived from your birth year.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" style="padding-top:0;">
+  <div class="section-label">◈ GAME FEATURES</div>
+  <h2 class="section-title">What's inside the <span>Simulation</span></h2>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon" style="color:var(--teal);">📖</div>
+      <div class="feature-title">CHARACTER JOURNAL</div>
+      <div class="feature-body">Seven expandable journal entries — one per frequency — each with a full explanation of your archetype, what the energy means in practice, and a personal affirmation.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="color:var(--gold);">⚔</div>
+      <div class="feature-title">QUEST LOG</div>
+      <div class="feature-body">A full quest system: Main Quest (Life Calling), secondary Life Quests, Side Quests, and Abundance Quests. Each includes real-world, actionable objectives you can actually complete.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="color:var(--purple);">📊</div>
+      <div class="feature-title">STAT CHARTS</div>
+      <div class="feature-body">Visual bar charts showing how your numbers distribute across 1–9 from three sources: your 7 core frequencies, your birthdate digits, and your name letter values.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="color:var(--rose);">◈</div>
+      <div class="feature-title">MASTER NUMBERS</div>
+      <div class="feature-body">11, 22, 33, and 44 are treated as master numbers with their own unique journal entries, quest briefings, and mission objectives. None are reduced away.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="color:var(--amber);">⚡</div>
+      <div class="feature-title">ABUNDANCE QUESTS</div>
+      <div class="feature-body">Numbers that appear unusually often in your combined code unlock bonus quests automatically. Your specific pattern generates quests no one else will have.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="color:var(--sage);">🔒</div>
+      <div class="feature-title">PRIVACY FIRST</div>
+      <div class="feature-body">All calculations happen locally in your browser. Your name and birthdate never leave your device unless you create an account. No tracking. No advertising.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <div class="section-label" style="justify-content:center;text-align:center;">◈ BEGIN</div>
+    <h2 class="cta-title">Ready to read your<br><span>Source Code?</span></h2>
+    <p class="cta-sub">IT TAKES LESS THAN 60 SECONDS</p>
+    <div class="cta-divider"></div>
+    <a href="app.html" class="btn-primary-hero">▶ ENTER THE SIMULATION</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">◈ SOURCE CODE: LIFE</div>
+    <ul class="footer-links">
+      <li><a href="index.html">HOME</a></li>
+      <li><a href="app.html">APP</a></li>
+      <li><a href="privacy.html">PRIVACY</a></li>
+    </ul>
+    <div class="footer-copy">© 2025 SOURCE CODE: LIFE</div>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
+</script>
+</body>
+</html>

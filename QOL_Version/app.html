@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOURCE CODE: LIFE — Download the App</title>
+<meta name="description" content="Download SOURCE CODE: LIFE on iOS and Android. Decode your 7 numerological frequencies as an RPG character sheet.">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<style>
+/* ── Variables (match main site) ── */
+:root {
+  --bg-deep:      #050508;
+  --bg-panel:     #0b0b14;
+  --bg-panel2:    #0f0f1c;
+  --bg-inset:     #07070f;
+  --border:       #1c1c38;
+  --border-glow:  #252550;
+  --gold:         #d4a843;
+  --gold-bright:  #f0c060;
+  --gold-dim:     #6b5220;
+  --gold-muted:   #382b10;
+  --teal:         #00e5cc;
+  --teal-dim:     #007a6e;
+  --teal-muted:   #00332e;
+  --purple:       #a070ff;
+  --purple-dim:   #4a2d99;
+  --rose:         #ff5580;
+  --amber:        #ff9930;
+  --sage:         #60d080;
+  --silver:       #90a8c8;
+  --text:         #c8d8f0;
+  --text-dim:     #50687a;
+  --text-mid:     #8898a8;
+  --white:        #e8f0ff;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Share Tech Mono', monospace;
+  background: var(--bg-deep);
+  color: var(--text);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* CRT scanline overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+}
+
+/* Vignette */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background: radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,0.65) 100%);
+}
+
+/* ── Nav (same as main, links back to index.html) ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 56px;
+  border-bottom: 1px solid transparent;
+  background: linear-gradient(180deg, rgba(5,5,8,0.95) 0%, rgba(5,5,8,0) 100%);
+  transition: border-color 0.3s, background 0.3s;
+}
+nav.scrolled {
+  background: rgba(5,5,8,0.96);
+  border-bottom-color: var(--border);
+}
+
+.nav-logo {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--teal);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+}
+.nav-logo:hover { color: var(--gold); }
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.nav-links a {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: var(--text-dim);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--teal); }
+
+.nav-cta {
+  background: transparent;
+  border: 1px solid var(--teal-dim);
+  color: var(--teal) !important;
+  padding: 8px 14px;
+  border-radius: 2px;
+  transition: border-color 0.2s, background 0.2s !important;
+}
+.nav-cta:hover {
+  background: rgba(0,229,204,0.08) !important;
+  border-color: var(--teal) !important;
+}
+.nav-cta.active-page {
+  background: rgba(0,229,204,0.12);
+  border-color: var(--teal);
+}
+
+@media (max-width: 640px) {
+  nav { padding: 0 16px; }
+  .nav-links { gap: 14px; }
+  .nav-links li:not(:last-child) { display: none; }
+}
+
+/* ── Page wrapper ── */
+.page-wrap {
+  padding-top: 56px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Hero ── */
+.app-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 24px 64px;
+  overflow: hidden;
+}
+
+/* Animated grid background */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,229,204,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,204,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridPulse 8s ease-in-out infinite;
+}
+@keyframes gridPulse {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1.0; }
+}
+
+/* Corner decorations */
+.hero-corner {
+  position: absolute;
+  width: 20px; height: 20px;
+  border-color: var(--teal-dim);
+  border-style: solid;
+}
+.hero-corner.tl { top: 20px; left: 20px; border-width: 1px 0 0 1px; }
+.hero-corner.tr { top: 20px; right: 20px; border-width: 1px 1px 0 0; }
+.hero-corner.bl { bottom: 20px; left: 20px; border-width: 0 0 1px 1px; }
+.hero-corner.br { bottom: 20px; right: 20px; border-width: 0 1px 1px 0; }
+
+.app-eyebrow {
+  position: relative;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: var(--teal);
+  letter-spacing: 0.2em;
+  margin-bottom: 20px;
+}
+
+.app-title {
+  position: relative;
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(16px, 4vw, 32px);
+  color: var(--white);
+  line-height: 1.5;
+  margin-bottom: 12px;
+  text-shadow: 0 0 40px rgba(0,229,204,0.3);
+}
+.app-title span { color: var(--gold); }
+
+.app-subtitle {
+  position: relative;
+  font-family: 'VT323', monospace;
+  font-size: clamp(18px, 3vw, 26px);
+  color: var(--text-mid);
+  letter-spacing: 0.15em;
+  margin-bottom: 24px;
+}
+
+.app-desc {
+  position: relative;
+  max-width: 560px;
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--text-dim);
+  margin-bottom: 48px;
+}
+
+/* ── Store buttons ── */
+.store-buttons {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+
+.store-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 24px;
+  background: rgba(11,11,20,0.9);
+  border: 1px solid var(--border-glow);
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--white);
+  transition: border-color 0.25s, background 0.25s, transform 0.2s;
+  min-width: 200px;
+}
+.store-btn:hover {
+  border-color: var(--teal);
+  background: rgba(0,229,204,0.06);
+  transform: translateY(-2px);
+}
+.store-btn.coming-soon {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.store-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.store-text-group {
+  text-align: left;
+}
+.store-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 0.12em;
+  margin-bottom: 3px;
+}
+.store-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--white);
+  letter-spacing: 0.05em;
+}
+
+.soon-badge {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  color: var(--amber);
+  letter-spacing: 0.1em;
+  border: 1px solid var(--amber-dim);
+  padding: 3px 7px;
+  border-radius: 2px;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+/* ── Notify section ── */
+.notify-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0,229,204,0.04);
+  border: 1px solid var(--teal-muted);
+  border-radius: 4px;
+  padding: 12px 18px;
+  max-width: 480px;
+  font-size: 11px;
+  color: var(--text-mid);
+}
+.notify-bar span { color: var(--teal); font-size: 13px; }
+
+/* ── Features strip ── */
+.features {
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 56px 24px;
+}
+.features-inner {
+  max-width: 960px;
+  margin: 0 auto;
+}
+.section-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: var(--teal);
+  letter-spacing: 0.2em;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(12px, 2vw, 16px);
+  color: var(--white);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.section-title span { color: var(--gold); }
+.section-body {
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--text-dim);
+  max-width: 600px;
+  margin-bottom: 40px;
+}
+
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+.feat-card {
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 24px 20px;
+  transition: border-color 0.25s;
+}
+.feat-card:hover { border-color: var(--border-glow); }
+
+.feat-icon {
+  font-size: 22px;
+  margin-bottom: 14px;
+}
+.feat-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+.feat-body {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--text-dim);
+}
+
+/* ── Frequencies preview ── */
+.freq-section {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 64px 24px;
+}
+.freq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-top: 36px;
+}
+.freq-chip {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: border-color 0.2s, background 0.2s;
+  cursor: default;
+}
+.freq-chip:hover { border-color: var(--border-glow); background: var(--bg-panel2); }
+.freq-num {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  min-width: 30px;
+}
+.freq-info-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  letter-spacing: 0.05em;
+  margin-bottom: 5px;
+}
+.freq-info-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* ── CTA banner ── */
+.cta-banner {
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border);
+  padding: 64px 24px;
+  text-align: center;
+}
+.cta-banner .section-title { margin: 0 auto 16px; }
+.cta-banner .section-body  { margin: 0 auto 36px; text-align: center; }
+
+.btn-primary {
+  display: inline-block;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--bg-deep);
+  background: var(--teal);
+  border: none;
+  border-radius: 2px;
+  padding: 16px 28px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: var(--gold); transform: translateY(-2px); }
+
+/* ── Footer ── */
+footer {
+  margin-top: auto;
+  padding: 36px 32px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer-logo {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--teal);
+}
+.footer-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+.footer-links a {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: var(--text-dim);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--teal); }
+.footer-copy {
+  font-size: 10px;
+  color: var(--text-dim);
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  footer { padding: 28px 16px; flex-direction: column; align-items: flex-start; gap: 14px; }
+  .store-buttons { flex-direction: column; align-items: center; }
+  .store-btn { width: 100%; max-width: 300px; }
+}
+
+/* ── Cursor blink ── */
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.cursor { display: inline-block; animation: blink 1s step-end infinite; }
+
+/* ── Scanline flicker on load ── */
+@keyframes flicker {
+  0%   { opacity: 0; }
+  5%   { opacity: 0.9; }
+  10%  { opacity: 0.6; }
+  15%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+.page-wrap { animation: flicker 0.4s ease-out both; }
+</style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<!-- Logo → back to main site home. All nav links → back to main site. -->
+<nav id="appNav">
+  <a class="nav-logo" href="index.html">◈ SOURCE CODE: LIFE</a>
+  <ul class="nav-links">
+    <li><a href="index.html#how-it-works">HOW IT WORKS</a></li>
+    <li><a href="index.html#frequencies">FREQUENCIES</a></li>
+    <li><a href="privacy.html">PRIVACY</a></li>
+    <li><a href="app.html" class="nav-cta active-page">▶ GET THE APP</a></li>
+  </ul>
+</nav>
+
+<div class="page-wrap">
+
+  <!-- ── Hero ── -->
+  <section class="app-hero">
+    <div class="hero-grid"></div>
+    <div class="hero-corner tl"></div>
+    <div class="hero-corner tr"></div>
+    <div class="hero-corner bl"></div>
+    <div class="hero-corner br"></div>
+
+    <div class="app-eyebrow">◈ DOWNLOAD &amp; PLAY</div>
+    <h1 class="app-title">GET THE<br><span>APP</span></h1>
+    <div class="app-subtitle">YOUR SIMULATION. YOUR FREQUENCIES.</div>
+    <p class="app-desc">
+      SOURCE CODE: LIFE is coming to iOS and Android. Enter your birth name and date — the engine decodes your 7 core numerological frequencies and builds your playable RPG character sheet.
+    </p>
+
+    <!-- Store buttons -->
+    <div class="store-buttons">
+
+      <a href="#notify" class="store-btn coming-soon" aria-label="App Store — Coming Soon">
+        <div class="store-icon">🍎</div>
+        <div class="store-text-group">
+          <div class="store-label">DOWNLOAD ON THE</div>
+          <div class="store-name">APP STORE</div>
+          <div class="soon-badge">COMING SOON</div>
+        </div>
+      </a>
+
+      <a href="#notify" class="store-btn coming-soon" aria-label="Google Play — Coming Soon">
+        <div class="store-icon">▶</div>
+        <div class="store-text-group">
+          <div class="store-label">GET IT ON</div>
+          <div class="store-name">GOOGLE PLAY</div>
+          <div class="soon-badge">COMING SOON</div>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Notify bar -->
+    <div class="notify-bar" id="notify">
+      <span>◈</span>
+      <span id="notify-text">
+        Be the first to know when we launch — drop your email below<span class="cursor">_</span>
+      </span>
+    </div>
+
+    <!-- Email capture -->
+    <div style="position:relative;display:flex;gap:8px;margin-top:16px;width:100%;max-width:420px;flex-wrap:wrap;justify-content:center;">
+      <input
+        id="notify-email"
+        type="email"
+        placeholder="your@email.com"
+        autocomplete="email"
+        style="
+          flex:1;min-width:200px;
+          background:rgba(11,11,20,0.95);
+          border:1px solid var(--border-glow);
+          border-radius:3px;
+          color:var(--text);
+          font-family:'Share Tech Mono',monospace;
+          font-size:13px;
+          padding:12px 14px;
+          outline:none;
+          transition:border-color 0.2s;
+        "
+        onfocus="this.style.borderColor='var(--teal)'"
+        onblur="this.style.borderColor='var(--border-glow)'"
+      >
+      <button
+        onclick="submitNotify()"
+        style="
+          font-family:'Press Start 2P',monospace;
+          font-size:7px;
+          letter-spacing:0.1em;
+          color:var(--bg-deep);
+          background:var(--teal);
+          border:none;
+          border-radius:3px;
+          padding:12px 18px;
+          cursor:pointer;
+          white-space:nowrap;
+          transition:background 0.2s;
+        "
+        onmouseover="this.style.background='var(--gold)'"
+        onmouseout="this.style.background='var(--teal)'"
+      >NOTIFY ME</button>
+    </div>
+    <div id="notify-confirm" style="font-size:11px;color:var(--sage);margin-top:10px;min-height:18px;"></div>
+
+  </section>
+
+  <!-- ── Features ── -->
+  <section class="features">
+    <div class="features-inner">
+      <div class="section-label">◈ WHAT YOU GET</div>
+      <h2 class="section-title">Everything in the<br><span>Simulation</span></h2>
+      <p class="section-body">One app. Seven frequencies. A fully playable RPG built from your birth data.</p>
+
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="feat-icon" style="color:var(--teal)">⚡</div>
+          <div class="feat-title" style="color:var(--teal)">7 FREQUENCIES</div>
+          <div class="feat-body">Life Path, Expression, Life Calling, Soul, Outer, Achievement, and Theme — all calculated and interpreted.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="color:var(--gold)">📜</div>
+          <div class="feat-title" style="color:var(--gold)">CHARACTER JOURNAL</div>
+          <div class="feat-body">A detailed RPG journal entry for each frequency — archetypes, strengths, shadows, and what each number is asking of you.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="color:var(--purple)">⚔️</div>
+          <div class="feat-title" style="color:var(--purple)">QUEST LOG</div>
+          <div class="feat-body">Your frequencies generate a full quest log: Main Quest, Life Quests, Side Quests, and Abundance Quests with real-world objectives.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="color:var(--rose)">📊</div>
+          <div class="feat-title" style="color:var(--rose)">STAT CHART</div>
+          <div class="feat-body">Visual frequency chart showing the balance of your seven numbers — your unique energetic signature at a glance.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="color:var(--amber)">🔢</div>
+          <div class="feat-title" style="color:var(--amber)">MASTER NUMBERS</div>
+          <div class="feat-body">11, 22, and 33 are recognised and handled separately — amplified potential, amplified challenge.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="color:var(--sage)">🔒</div>
+          <div class="feat-title" style="color:var(--sage)">PRIVATE BY DESIGN</div>
+          <div class="feat-body">All calculations run on-device. Your birth data is never sent to a server. No accounts required to get your reading.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Frequencies preview ── -->
+  <section class="freq-section">
+    <div class="section-label">◈ YOUR FREQUENCIES</div>
+    <h2 class="section-title">Seven Numbers.<br><span>One Complete Map.</span></h2>
+    <p class="section-body">Every reading unlocks all seven frequencies simultaneously. Each is independent, yet together they form a unified picture of your simulation parameters.</p>
+
+    <div class="freq-grid">
+      <div class="freq-chip">
+        <div class="freq-num" style="color:var(--teal)">01</div>
+        <div>
+          <div class="freq-info-name" style="color:var(--teal)">LIFE PATH</div>
+          <div class="freq-info-desc">Your primary mission and the core theme of your journey.</div>
+        </div>
+      </div>
+      <div class="freq-chip">
+        <div class="freq-num" style="color:var(--gold)">02</div>
+        <div>
+          <div class="freq-info-name" style="color:var(--gold)">EXPRESSION</div>
+          <div class="freq-info-desc">Your natural talents and the way you show up in the world.</div>
+        </div>
+      </div>
+      <div class="freq-chip">
+        <div class="freq-num" style="color:var(--purple)">03</div>
+        <div>
+          <div class="freq-info-name" style="color:var(--purple)">LIFE CALLING</div>
+          <div class="freq-info-desc">Your unique directive — the fusion of path and expression.</div>
+        </div>
+      </div>
+      <div class="freq-chip">
+        <div class="freq-num" style="color:var(--rose)">04</div>
+        <div>
+          <div class="freq-info-name" style="color:var(--rose)">SOUL URGE</div>
+          <div class="freq-info-desc">Your inner desires, values, and private motivations.</div>
+        </div>
+      </div>
+      <div class="freq-chip">
+        <div class="freq-num" style="color:var(--amber)">05</div>
+        <div>
+          <div class="freq-info-name" style="color:var(--amber)">OUTER PERSONA</div>
+          <div class="freq-info-desc">The face you present and how others experience you.</div>
+        </div>
+      </div>
+      <div class="freq-chip">
+        <div class="freq-num" style="color:var(--sage)">06</div>
+        <div>
+          <div class="freq-info-name" style="color:var(--sage)">ACHIEVEMENT</div>
+          <div class="freq-info-desc">Your natural approach to goals and how you accomplish things.</div>
+        </div>
+      </div>
+      <div class="freq-chip">
+        <div class="freq-num" style="color:var(--silver)">07</div>
+        <div>
+          <div class="freq-info-name" style="color:var(--silver)">THEME</div>
+          <div class="freq-info-desc">The recurring pattern and lesson woven through your life.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA banner ── -->
+  <section class="cta-banner">
+    <div class="section-label" style="text-align:center;margin-bottom:16px">◈ BEGIN</div>
+    <h2 class="section-title" style="text-align:center;max-width:500px;margin:0 auto 16px">Ready to read your<br><span>source code?</span></h2>
+    <p class="section-body" style="text-align:center">Try the web calculator now while the app is in development. Same engine, same frequencies — in your browser.</p>
+    <a class="btn-primary" href="index.html#calculator">▶ TRY THE CALCULATOR</a>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer>
+    <div class="footer-logo">◈ SOURCE CODE: LIFE</div>
+    <ul class="footer-links">
+      <li><a href="index.html">HOME</a></li>
+      <li><a href="app.html">APP</a></li>
+      <li><a href="privacy.html">PRIVACY</a></li>
+    </ul>
+    <div class="footer-copy">© 2025 SOURCE CODE: LIFE</div>
+  </footer>
+
+</div><!-- /page-wrap -->
+
+<script>
+// ── Nav scroll state ──────────────────────────────────────────
+(function () {
+  var nav = document.getElementById('appNav');
+  window.addEventListener('scroll', function () {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+  }, { passive: true });
+})();
+
+// ── Email notify form ─────────────────────────────────────────
+function submitNotify() {
+  var input   = document.getElementById('notify-email');
+  var confirm = document.getElementById('notify-confirm');
+  var email   = (input.value || '').trim();
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    confirm.style.color = 'var(--rose)';
+    confirm.textContent = '> INVALID EMAIL — try again';
+    return;
+  }
+
+  // Store locally (replace this with your backend / Mailchimp / etc.)
+  try {
+    var stored = JSON.parse(localStorage.getItem('ssc-notify-emails') || '[]');
+    if (!stored.includes(email)) {
+      stored.push(email);
+      localStorage.setItem('ssc-notify-emails', JSON.stringify(stored));
+    }
+  } catch (e) {}
+
+  input.value = '';
+  confirm.style.color = 'var(--sage)';
+  confirm.textContent = '> REGISTERED — we\'ll contact you at launch ◈';
+
+  // Update notify bar text
+  document.getElementById('notify-text').innerHTML =
+    'You\'re on the list. We\'ll reach out when the simulation goes live.<span class="cursor">_</span>';
+}
+
+// Allow Enter key on email input
+document.getElementById('notify-email').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') submitNotify();
+});
+</script>
+
+</body>
+</html>
